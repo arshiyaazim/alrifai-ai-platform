@@ -1,0 +1,146 @@
+# AL-RIFAI Data Dictionary
+
+**Status:** DESIGN PHASE  
+**Created:** 2026-09-19
+
+Each field has a single, unambiguous meaning across the entire platform.
+
+---
+
+## Naming Convention Rules
+
+- `person_id` means exactly one thing everywhere (immutable UUID)
+- `employee_id` means exactly one thing everywhere (UUID → persons)
+- `applicant_id` means exactly one thing everywhere
+- Do not reuse the same name for different concepts
+- Do not use different names for the same concept without explicit mapping
+
+---
+
+## Core Fields
+
+### person_id
+- **Display:** Person ID
+- **Domain:** Identity
+- **Type:** UUID
+- **Nullable:** NO (PK)
+- **Unique:** YES
+- **Canonical Format:** `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
+- **Meaning:** Immutable canonical person identity
+- **Source:** System-generated (uuid_generate_v4)
+- **Privacy:** PII — restricted access
+- **Mutable:** IMMUTABLE
+- **Authoritative:** AL-RIFAI Platform
+
+### employee_code
+- **Display:** Employee Code
+- **Domain:** Employee
+- **Type:** TEXT
+- **Nullable:** NO (UNIQUE)
+- **Meaning:** Human-readable employee identifier (distinct from person_id)
+- **Source:** Assigned on hire
+- **Privacy:** Internal
+- **Mutable:** NO (once assigned)
+
+### phone_normalized
+- **Display:** Phone (Normalized)
+- **Domain:** Identity
+- **Type:** TEXT
+- **Nullable:** YES
+- **Canonical Format:** `+880XXXXXXXXX` (Bangladeshi E.164)
+- **Meaning:** Canonical normalized phone number for contact
+- **Source:** phone_normalizer library
+- **Privacy:** PII — restricted access
+- **Mutable:** YES (via update process)
+- **Authoritative:** phone_normalizer normalization
+
+### payout_number
+- **Display:** Payout Number
+- **Domain:** Employee Financial
+- **Type:** TEXT
+- **Nullable:** YES
+- **Meaning:** Financial routing attribute — NOT identity
+- **Source:** Assigned during onboarding
+- **Privacy:** Financial — restricted access
+- **Mutable:** YES
+- **Authoritative:** Payroll system
+
+### status
+- **Display:** Status
+- **Domain:** All entities
+- **Type:** TEXT
+- **Meaning:** Current lifecycle state
+- **Values:** active, inactive, suspended, pending, deleted, terminated, probation
+- **Authoritative:** The owning domain service
+
+---
+
+## Business Tables
+
+### employees
+| Field | Type | Nullable | Unique | Meaning |
+|---|---|---|---|---|
+| employee_id | UUID | NO | YES | PK |
+| person_id | UUID | NO | — | FK to persons |
+| employee_code | TEXT | NO | YES | Human-readable code |
+| display_name | TEXT | NO | — | Preferred display name |
+| designation | TEXT | YES | — | Job title |
+| department | TEXT | YES | — | Department |
+| status | TEXT | NO | — | Lifecycle state |
+| hire_date | DATE | YES | — | Employment start |
+| termination_date | DATE | YES | — | End date |
+| payout_number | TEXT | YES | — | Financial routing |
+| manager_id | UUID | YES | — | FK to employees |
+| source_system | TEXT | NO | — | Origin system |
+
+### applicants
+| Field | Type | Nullable | Meaning |
+|---|---|---|---|
+| applicant_id | UUID | NO | PK |
+| person_id | UUID | YES | FK to persons |
+| application_code | TEXT | NO | Unique application reference |
+| position | TEXT | NO | Applied position |
+| source | TEXT | YES | Where applied |
+| status | TEXT | NO | Application state |
+| applied_at | TIMESTAMPTZ | NO | Timestamp |
+
+### clients
+| Field | Type | Nullable | Meaning |
+|---|---|---|---|
+| client_id | UUID | NO | PK |
+| person_id | UUID | YES | FK to persons |
+| client_code | TEXT | NO | Unique client code |
+| company_name | TEXT | YES | Company name |
+| billing_email | TEXT | YES | |
+| status | TEXT | NO | Lifecycle state |
+
+---
+
+## Audit & Events
+
+### business_events
+| Field | Type | Meaning |
+|---|---|---|
+| event_id | UUID | PK |
+| event_type | TEXT | EMPLOYEE_CREATED, PAYMENT_CONFIRMED, etc. |
+| aggregate_type | TEXT | Entity type (employee, applicant, client) |
+| aggregate_id | UUID | The affected entity |
+| actor_id | UUID | Who performed the action |
+| payload | JSONB | Event data |
+| idempotency_key | TEXT | Idempotency control |
+| occurred_at | TIMESTAMPTZ | When |
+| source_system | TEXT | Origin system |
+
+### audit_log
+| Field | Type | Meaning |
+|---|---|---|
+| audit_id | UUID | PK |
+| entity_type | TEXT | Table name |
+| entity_id | UUID | Row ID |
+| action | TEXT | CREATE, UPDATE, DELETE, LOGIN, APPROVE |
+| actor_id | UUID | Who |
+| before_state | JSONB | Pre-state |
+| after_state | JSONB | Post-state |
+| ip_address | INET | Source IP |
+| correlation_id | TEXT | Request trace |
+| occurred_at | TIMESTAMPTZ | When |

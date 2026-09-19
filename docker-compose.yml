@@ -1,0 +1,123 @@
+name: alrifai
+
+services:
+  # =============================================================================
+  # NEW PLATFORM DATABASE - Independent PostgreSQL, NOT ai-postgres
+  # =============================================================================
+  alrifai-postgres:
+    image: postgres:17-alpine@sha256:f02121de6f74d30d8a94cd1d9584125e2178d7e6c377d8130112d4e52d867995
+    container_name: alrifai-postgres
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5433:5432"
+    networks:
+      - alrifai-net
+    volumes:
+      - alrifai_db_data:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-alrifai}
+      - POSTGRES_USER=${POSTGRES_USER:-alrifai}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-alrifai} -d ${POSTGRES_DB:-alrifai}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # =============================================================================
+  # NEW OPEN WEBUI - Pinned release v0.11.3 (NOT :main mutable tag)
+  # =============================================================================
+  alrifai-open-webui:
+    image: ghcr.io/open-webui/open-webui:v0.11.3
+    container_name: alrifai-open-webui
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8502:8080"
+    networks:
+      - alrifai-net
+      - ai-network
+    volumes:
+      - alrifai_open_webui_data:/app/backend/data
+    environment:
+      # --- Database (Open WebUI internal data store) ---
+      - POSTGRES_HOST=alrifai-postgres
+      - POSTGRES_DB=${POSTGRES_DB:-alrifai}
+      - POSTGRES_USER=${POSTGRES_USER:-alrifai}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      # --- Ollama Direct ---
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      # --- 9Router via ai-network ---
+      - OPENAI_API_BASE_URL=${NINE_ROUTER_URL:-http://9router:20128/v1}
+      - OPENAI_API_KEY=${NINE_ROUTER_API_KEY}
+      # --- Model picker ---
+      - ENABLE_MODEL_FILTER=true
+      - MODEL_FILTER_LIST=phi4-mini:latest;hermes3:3b;nomic-embed-text:latest
+      - DEFAULT_MODELS=${DEFAULT_MODELS:-phi4-mini:latest}
+      # --- Auth ---
+      - WEBUI_AUTH=${WEBUI_AUTH:-true}
+      - ENABLE_SIGNUP=${ENABLE_SIGNUP:-false}
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+      # --- Privacy ---
+      - ENABLE_COMMUNITY_SHARING=false
+      - SCARF_NO_ANALYTICS=true
+      - DO_NOT_TRACK=true
+      - ANONYMIZED_TELEMETRY=false
+      - USE_OLLAMA_DOCKER=false
+      - USE_CUDA_DOCKER=false
+      - USE_SLIM_DOCKER=false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      alrifai-postgres:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # =============================================================================
+  # NEW PLATFORM ADMIN SHELL (lightweight utility container)
+  # =============================================================================
+  alrifai-cli:
+    image: postgres:17-alpine
+    container_name: alrifai-cli
+    restart: "no"
+    networks:
+      - alrifai-net
+      - ai-network
+    volumes:
+      - ./database:/workspace/db:ro
+      - ./scripts:/workspace/scripts:ro
+    environment:
+      - PGHOST=alrifai-postgres
+      - PGDATABASE=${POSTGRES_DB:-alrifai}
+      - PGUSER=${POSTGRES_USER:-alrifai}
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+    profiles:
+      - admin
+    entrypoint: ["/bin/sh"]
+    tty: true
+
+networks:
+  alrifai-net:
+    driver: bridge
+  ai-network:
+    external: true
+
+volumes:
+  alrifai_db_data:
+    name: alrifai_db_data
+  alrifai_open_webui_data:
+    name: alrifai_open-webui-data
