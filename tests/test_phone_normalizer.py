@@ -8,11 +8,9 @@ def normalize_phone(raw: str) -> str:
     """Normalize Bangladeshi phone to +880XXXXXXXXX format."""
     digits = ''.join(c for c in raw if c.isdigit())
     if len(digits) == 11 and digits.startswith('0'):
-        return '+88' + digits  # +880XXXXXXXXX
-    elif len(digits) == 12 and digits.startswith('880'):
+        return '+88' + digits
+    elif len(digits) == 13 and digits.startswith('880'):
         return '+' + digits
-    elif len(digits) == 13 and digits.startswith('+880'):
-        return '+' + digits[1:]
     return raw
 
 
