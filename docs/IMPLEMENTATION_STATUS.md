@@ -19,7 +19,8 @@
 | Observability Guide | IMPLEMENTED | Phase 10 |
 | Security Boundaries | IMPLEMENTED | Phase 1 |
 | Session Handoff | IMPLEMENTED | Phase 1 |
-| Tests | NOT STARTED | Phase 1 |
+| Tests | IMPLEMENTED (11/11 pass) | Phase 1 |
+| Read-only Connector | IMPLEMENTED (design) | Phase 6 |
 | Read-only Connector | NOT STARTED | Phase 6 |
 | MCP Gateway | NOT STARTED | Phase 7 |
 | Agents | NOT STARTED | Phase 8 |
