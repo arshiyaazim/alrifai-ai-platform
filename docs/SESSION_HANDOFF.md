@@ -1,17 +1,19 @@
 # Session Handoff
 
-**Last Completed Phase:** Phase 0-3 (Discovery, Repository Foundation, Open WebUI Deploy, DB + Tests)
+**Last Completed Phase:** Audit and architecture review of current Fazle-Core and the AL-RIFAI identity schema
 **Current Commits:**
 - `d4920cc` — Phase 0-1: AL-RIFAI AI Operations Platform foundation
 - `5e0407e` — Phase 2-3: Deploy NEW Open WebUI v0.11.3, Ollama + 9Router integration, database tests
+- `pending audit commit` — Dual-workflow architecture audit and schema inventory for current Fazle-Core and AL-RIFAI
 **Branch:** main
 **Current Running New Services:** alrifai-postgres (5434, healthy), alrifai-open-webui (8502, healthy)
 **Verified Tests:** 11/11 pass (phone normalization + identity resolution)
-**Open Blockers:** None — all work is independent
-**Next Safe Action:** Phase 4 — MCP Gateway foundation, read-only connector, agents
+**Open Blockers:** None — audit findings are documented and implementation remains intentionally deferred until canonical services are approved
+**Next Safe Action:** Phase 4 — Canonical business services and bounded-domain design, not feature growth or new MCP servers
 
 **Owner Action Required:**
 - Review .env (not committed, in working tree) for credential rotation
+- Approve the canonical domain-service design before implementation begins
 - Phase 11 (Nginx publication for alrifai.iamazim.com) requires explicit approval
 
 ---
@@ -57,11 +59,23 @@ Created:
 - docs/rules/BUSINESS_RULES.md
 - 20+ documented rules with provenance
 
-### PHASE 6: Read-only Connector Framework (NOT YET)
-- Connector boundary design documented
-- Need implementation
+### PHASE 6: Current System Audit (Complete)
+- Messaging workflow audit: bridge polling → identity resolution → message routing → validation → domain DB writes → outbound reply
+- Frontend form workflow audit: API route → validation → domain service → DB transaction → audit trail
+- Fazle-Core schema audit: hybrid legacy + FPE + operations tables; identified overlapping identity and ledger tables
+- AL-RIFAI live schema audit: all 13 tables confirmed and matched to the live database
+- Canonical convergence model documented: single business layer, not duplicate per-channel logic
 
-### PHASE 7: MCP Gateway Foundation (NOT YET)
+### PHASE 7: Domain Architecture Review (Complete)
+- Six-domain ownership matrix defined
+- Canonical workflow model documented
+- Error isolation and domain codes defined
+- Audit files under `docs/audits` and `docs/architecture` created
+
+### PHASE 8: Safe implementation gate (Current)
+- Do not implement new business features yet
+- Do not create new MCP servers yet
+- Use canonical service contracts and integration boundaries before any implementation
 
 ---
 
@@ -71,6 +85,7 @@ Created:
 - Fazle-Core migrations → schema patterns
 - Fazle-Core ownership matrix → integration boundaries
 - 9Router model catalog → available model combos
+- Current Fazle-Core dual-workflow audit → canonical convergence model
 
 ## Identity/Data Decisions
 - UUID primary keys, never name/phone as PK
@@ -78,6 +93,7 @@ Created:
 - Payout number = financial routing, not identity
 - External platform IDs explicitly typed
 - Provenance tracking for all imports
+- Messaging and form flows must converge via a shared canonical business engine
 
 ## Running Services
 | Service | Container | Port | Status |
@@ -99,3 +115,4 @@ Created:
 ## Owner Approval Required
 - Phase 11 (Nginx publication) requires explicit approval
 - Production credential rotation
+- Canonical domain service design approval before feature implementation
