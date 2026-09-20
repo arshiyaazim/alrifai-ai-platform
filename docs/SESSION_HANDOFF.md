@@ -1,19 +1,22 @@
 # Session Handoff
 
-**Last Completed Phase:** Audit and architecture review of current Fazle-Core and the AL-RIFAI identity schema
+**Last Completed Phase:** GitHub repository, local development, and VPS deployment audit
 **Current Commits:**
 - `d4920cc` — Phase 0-1: AL-RIFAI AI Operations Platform foundation
 - `5e0407e` — Phase 2-3: Deploy NEW Open WebUI v0.11.3, Ollama + 9Router integration, database tests
-- `pending audit commit` — Dual-workflow architecture audit and schema inventory for current Fazle-Core and AL-RIFAI
+- `73b32a5` — Dual-workflow architecture audit and schema inventory for current Fazle-Core and AL-RIFAI
+- `pending audit commit` — GitHub remote, publication safety, Windows development, and VPS deployment audit
 **Branch:** main
 **Current Running New Services:** alrifai-postgres (5434, healthy), alrifai-open-webui (8502, healthy)
 **Verified Tests:** 11/11 pass (phone normalization + identity resolution)
-**Open Blockers:** None — audit findings are documented and implementation remains intentionally deferred until canonical services are approved
-**Next Safe Action:** Phase 4 — Canonical business services and bounded-domain design, not feature growth or new MCP servers
+**Open Blockers:** GitHub CLI/account authentication and owner approval of the first private remote repository are pending
+**Next Safe Action:** Owner verifies `arshiyaazim`, creates the empty private repository, then approves the first push
 
 **Owner Action Required:**
 - Review .env (not committed, in working tree) for credential rotation
+- Restrict VPS `.env` permissions to owner-only and rotate any exposed credentials
 - Approve the canonical domain-service design before implementation begins
+- Approve the GitHub owner, private visibility, and first-push plan
 - Phase 11 (Nginx publication for alrifai.iamazim.com) requires explicit approval
 
 ---
@@ -77,6 +80,16 @@ Created:
 - Do not create new MCP servers yet
 - Use canonical service contracts and integration boundaries before any implementation
 
+### PHASE 9: GitHub and deployment audit (Complete)
+- Local Git repository verified: `main`, clean, no remote, no upstream
+- Commits `d4920cc`, `5e0407e`, and `73b32a5` verified locally
+- GitHub CLI unavailable on VPS; account and push permission remain unverified
+- No accessible matching repository found through read-only GitHub search
+- Publication safety reviewed; real `.env` remains ignored and untracked
+- Windows setup, GitHub-to-VPS release flow, rollback, and secrets policy documented
+- Backup SQL paths added to `.gitignore`
+- PostgreSQL documentation port corrected to `5434`
+
 ---
 
 ## Imported Knowledge
@@ -94,6 +107,7 @@ Created:
 - External platform IDs explicitly typed
 - Provenance tracking for all imports
 - Messaging and form flows must converge via a shared canonical business engine
+- GitHub remote creation and first push require explicit owner approval
 
 ## Running Services
 | Service | Container | Port | Status |
@@ -110,9 +124,11 @@ Created:
 - Nginx publication (alrifai.iamazim.com)
 
 ## Blocked
-- None
+- GitHub account verification on VPS because `gh` is not installed
+- First remote creation and push pending owner approval
 
 ## Owner Approval Required
 - Phase 11 (Nginx publication) requires explicit approval
 - Production credential rotation
 - Canonical domain service design approval before feature implementation
+- GitHub account/visibility and first-push approval

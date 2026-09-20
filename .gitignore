@@ -18,6 +18,8 @@
 
 # Database dumps
 **/*.dump
+backups/*.sql
+backups/*.dump
 **/*.sql.bak
 **/backups/*.db
 !backups/.gitkeep

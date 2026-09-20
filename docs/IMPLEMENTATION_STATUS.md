@@ -26,6 +26,11 @@
 | Canonical Workflow Design | IMPLEMENTED | Audit Phase |
 | Domain Ownership Matrix | IMPLEMENTED | Audit Phase |
 | Error Isolation Design | IMPLEMENTED | Audit Phase |
+| GitHub Remote Audit | IMPLEMENTED | Audit Phase |
+| Windows Development Guide | IMPLEMENTED | Audit Phase |
+| GitHub-to-VPS Workflow | IMPLEMENTED | Audit Phase |
+| Release and Rollback Guide | IMPLEMENTED | Audit Phase |
+| Secrets Policy | IMPLEMENTED | Audit Phase |
 | Read-only Connector | IMPLEMENTED (design) | Phase 6 |
 | Read-only Connector | NOT STARTED | Phase 6 |
 | MCP Gateway | NOT STARTED | Phase 7 |
@@ -34,4 +39,4 @@
 | Nginx Publication | NOT STARTED | Phase 11 |
 
 ## Audit gate status
-The audit phase is complete and the next safe implementation phase is canonical business service design, not functional feature implementation.
+The GitHub/deployment audit is complete. The repository is **REQUIRES REVIEW** before publication because the VPS cannot verify GitHub authentication or push permission without `gh`. The next safe action is owner approval, authenticated repository verification, and creation of an empty private remote. No push or automatic production deployment has been performed.

@@ -22,7 +22,7 @@ docker compose up -d alrifai-postgres alrifai-open-webui
 |---|---|
 | Open WebUI | http://127.0.0.1:8502 |
 | 9Router Dashboard | http://127.0.0.1:20129/dashboard |
-| PostgreSQL | 127.0.0.1:5433 |
+| PostgreSQL | 127.0.0.1:5434 |
 
 ## Architecture
 

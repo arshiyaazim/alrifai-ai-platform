@@ -32,7 +32,7 @@ docker compose logs alrifai-open-webui
 
 | Service | Container | Port | Image |
 |---|---|---|---|
-| PostgreSQL | `alrifai-postgres` | 127.0.0.1:5433 | `postgres:17-alpine@sha256:f021...` |
+| PostgreSQL | `alrifai-postgres` | 127.0.0.1:5434 | `postgres:17-alpine@sha256:f021...` |
 | Open WebUI | `alrifai-open-webui` | 127.0.0.1:8502 | `ghcr.io/open-webui/open-webui:v0.11.3` |
 | CLI Shell | `alrifai-cli` | — | `postgres:17-alpine` (profile: admin) |
 
@@ -55,7 +55,7 @@ docker compose logs alrifai-open-webui
 - **Ollama:** `http://ollama:11434` via `ai-network`
 - **Admin Dashboard:** `http://127.0.0.1:20129/dashboard`
 - **New Open WebUI:** `http://127.0.0.1:8502`
-- **New PostgreSQL:** `127.0.0.1:5433`
+- **New PostgreSQL:** `127.0.0.1:5434`
 
 ---
 
