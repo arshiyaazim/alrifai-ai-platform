@@ -10,7 +10,7 @@ import pytest
 psycopg = pytest.importorskip("psycopg")
 from fastapi.testclient import TestClient  # noqa: E402
 
-from src.alrifai.auth.service import create_owner, create_pending_account  # noqa: E402
+from src.alrifai.auth.service import _hash_token, create_owner, create_pending_account  # noqa: E402
 from src.alrifai.web.app import app  # noqa: E402
 
 
@@ -90,6 +90,96 @@ def test_web_login_owner_dashboard_and_logout(database_url: str, isolated_auth_d
         logged_out = client.post("/logout", data={"csrf_token": csrf}, follow_redirects=False)
         assert logged_out.status_code == 303
     assert client.get("/owner", follow_redirects=False).status_code == 303
+
+
+def test_auth_check_and_safe_openwebui_return_flow(database_url: str, isolated_auth_data, monkeypatch: pytest.MonkeyPatch):
+    password = "development-" + uuid4().hex + "!"
+    with psycopg.connect(database_url) as connection:
+        create_owner(connection, "azimpolcu", password)
+    monkeypatch.setenv("ALRIFAI_DATABASE_URL", database_url)
+    monkeypatch.setenv("ALRIFAI_ENV", "production")
+    monkeypatch.setenv("ALRIFAI_COOKIE_DOMAIN", ".alrifai.iamazim.com")
+
+    with TestClient(app, base_url="https://alrifai.iamazim.com") as client:
+        assert client.get("/internal/auth-check").status_code == 401
+        client.cookies.set("alrifai_session", "invalid")
+        assert client.get("/internal/auth-check").status_code == 401
+        client.cookies.clear()
+
+        malicious = client.post(
+            "/login",
+            data={"username": "azimpolcu", "password": password, "return_to": "https://evil.example/"},
+        )
+        assert malicious.status_code == 200
+        assert "Invalid return destination" in malicious.text
+
+        login = client.post(
+            "/login",
+            data={"username": "azimpolcu", "password": password, "return_to": "https://ai.alrifai.iamazim.com/"},
+            follow_redirects=False,
+        )
+        assert login.status_code == 303
+        assert login.headers["location"] == "/change-password?return_to=https%3A%2F%2Fai.alrifai.iamazim.com%2F"
+        set_cookies = login.headers.get_list("set-cookie")
+        session_cookie = next(value for value in set_cookies if value.startswith("alrifai_session="))
+        csrf_cookie = next(value for value in set_cookies if value.startswith("alrifai_csrf="))
+        for cookie in (session_cookie, csrf_cookie):
+            assert "Domain=.alrifai.iamazim.com" in cookie
+            assert "Path=/" in cookie
+            assert "Secure" in cookie
+            assert "HttpOnly" in cookie
+            assert "SameSite=lax" in cookie
+
+        csrf = client.cookies.get("alrifai_csrf")
+        changed = client.post(
+            "/change-password",
+            data={
+                "password": "changed-" + uuid4().hex + "!",
+                "confirmation": "changed-placeholder",
+                "csrf_token": csrf,
+                "return_to": "https://ai.alrifai.iamazim.com/",
+            },
+        )
+        assert changed.status_code == 200
+        assert "Passwords did not match" in changed.text
+
+        changed_password = "changed-" + uuid4().hex + "!"
+        changed = client.post(
+            "/change-password",
+            data={"password": changed_password, "confirmation": changed_password, "csrf_token": csrf, "return_to": "https://ai.alrifai.iamazim.com/"},
+            follow_redirects=False,
+        )
+        assert changed.status_code == 303
+        assert changed.headers["location"] == "https://ai.alrifai.iamazim.com/"
+        assert client.get("/internal/auth-check").status_code == 204
+
+        logout = client.post("/logout", data={"csrf_token": csrf}, follow_redirects=False)
+        assert logout.status_code == 303
+        deleted = logout.headers.get_list("set-cookie")
+        assert any("alrifai_session=" in value and "Domain=.alrifai.iamazim.com" in value and "Path=/" in value for value in deleted)
+        assert any("alrifai_csrf=" in value and "Domain=.alrifai.iamazim.com" in value and "Path=/" in value for value in deleted)
+        assert client.get("/internal/auth-check").status_code == 401
+
+    ordinary_password = "ordinary-" + uuid4().hex + "!"
+    with psycopg.connect(database_url) as connection:
+        ordinary_id = create_pending_account(connection, "ordinary-auth-check", ordinary_password)
+        connection.execute("UPDATE auth_principals SET status='active' WHERE principal_id=%s", (ordinary_id,))
+        connection.commit()
+    with TestClient(app, base_url="https://alrifai.iamazim.com") as ordinary:
+        login = ordinary.post("/login", data={"username": "ordinary-auth-check", "password": ordinary_password}, follow_redirects=False)
+        assert login.status_code == 303
+        assert login.headers["location"] == "/home"
+        assert ordinary.get("/internal/auth-check").status_code == 204
+        session_token = ordinary.cookies.get("alrifai_session")
+        with psycopg.connect(database_url) as connection:
+            connection.execute("UPDATE auth_principals SET status='disabled' WHERE principal_id=%s", (ordinary_id,))
+            connection.commit()
+        assert ordinary.get("/internal/auth-check").status_code == 401
+        with psycopg.connect(database_url) as connection:
+            connection.execute("UPDATE auth_principals SET status='active' WHERE principal_id=%s", (ordinary_id,))
+            connection.execute("UPDATE auth_sessions SET expires_at=NOW() WHERE token_hash=%s", (_hash_token(session_token),))
+            connection.commit()
+        assert ordinary.get("/internal/auth-check").status_code == 401
 
 
 def test_signup_cannot_create_privileged_principal(database_url: str, isolated_auth_data, monkeypatch: pytest.MonkeyPatch):

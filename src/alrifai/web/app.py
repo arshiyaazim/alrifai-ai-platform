@@ -8,11 +8,12 @@ import threading
 import time
 from contextlib import contextmanager
 from typing import Iterator
+from urllib.parse import quote, urlsplit
 from uuid import UUID
 
 import psycopg
 from fastapi import FastAPI, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from src.alrifai.auth.service import (
     AuthenticationError,
@@ -106,6 +107,43 @@ def _owner_token(request: Request) -> tuple[str, str] | None:
     return request.cookies.get("alrifai_session", ""), request.cookies.get("alrifai_csrf", "")
 
 
+def _cookie_domain() -> str | None:
+    value = os.getenv("ALRIFAI_COOKIE_DOMAIN", "").strip()
+    if value and value != ".alrifai.iamazim.com":
+        raise RuntimeError("ALRIFAI_COOKIE_DOMAIN must be .alrifai.iamazim.com")
+    return value or None
+
+
+def _safe_return_url(value: str) -> str | None:
+    if not value:
+        return None
+    parsed = urlsplit(value)
+    if parsed.scheme or parsed.netloc:
+        if parsed.scheme != "https" or parsed.hostname not in {"alrifai.iamazim.com", "ai.alrifai.iamazim.com"}:
+            return None
+        if parsed.username or parsed.password or parsed.fragment:
+            return None
+        return value
+    if not value.startswith("/") or value.startswith("//") or parsed.fragment:
+        return None
+    return value
+
+
+def _return_field(value: str) -> str:
+    target = _safe_return_url(value)
+    return f"<input type='hidden' name='return_to' value='{html.escape(target, quote=True)}'>" if target else ""
+
+
+def _return_query(value: str) -> str:
+    target = _safe_return_url(value)
+    return f"?return_to={quote(target, safe='')}" if target else ""
+
+
+@app.get("/internal/auth-check", include_in_schema=False)
+def auth_check(request: Request) -> Response:
+    return Response(status_code=204 if _session(request) is not None else 401)
+
+
 @app.get("/health", response_class=HTMLResponse)
 def health() -> HTMLResponse:
     try:
@@ -119,11 +157,15 @@ def health() -> HTMLResponse:
 
 
 @app.get("/", response_class=HTMLResponse)
-def home(message: str = "") -> HTMLResponse:
+def home(message: str = "", return_to: str = "") -> HTMLResponse:
+    target = _safe_return_url(return_to)
+    if return_to and target is None:
+        message = "Invalid return destination."
     return page("Sign in", f"""
         <section class='card narrow'><div class='brand'>AL-RIFAI</div>
         <p class='muted'>AI Operations Platform</p><h1>Sign in</h1>
         <form method='post' action='/login'>
+          {_return_field(target or '')}
           <label>Username<input name='username' autocomplete='username' required></label>
           <label>Password<input id='password' name='password' type='password' autocomplete='current-password' required></label>
           <label class='check'><input type='checkbox' onclick="document.getElementById('password').type=this.checked?'text':'password'"> Show password</label>
@@ -133,32 +175,37 @@ def home(message: str = "") -> HTMLResponse:
 
 
 @app.post("/login")
-def login(request: Request, username: str = Form(...), password: str = Form(...)) -> HTMLResponse:
+def login(request: Request, username: str = Form(...), password: str = Form(...), return_to: str = Form("")) -> HTMLResponse:
+    target = _safe_return_url(return_to)
+    if return_to and target is None:
+        return home("Invalid return destination.")
     key = f"{request.client.host if request.client else 'unknown'}:{username.strip().casefold()}"
     if not _attempt_allowed(key):
-        return home("Too many attempts. Try again later.")
+        return home("Too many attempts. Try again later.", target or "")
     try:
         with database() as connection:
             result = authenticate(connection, username, password)
     except AuthenticationError:
-        return home("Invalid username or password.")
+        return home("Invalid username or password.", target or "")
     except (RuntimeError, psycopg.Error):
-        return home("Authentication is temporarily unavailable.")
-    response = RedirectResponse("/change-password" if result.must_change_password else "/home", status_code=303)
+        return home("Authentication is temporarily unavailable.", target or "")
+    response_target = "/change-password" + _return_query(target or "") if result.must_change_password else (target or "/home")
+    response = RedirectResponse(response_target, status_code=303)
     secure = os.getenv("ALRIFAI_ENV", "local").lower() not in {"local", "development", "dev"}
-    response.set_cookie("alrifai_session", result.session_token, httponly=True, secure=secure, samesite="lax", max_age=28800)
-    response.set_cookie("alrifai_csrf", result.csrf_token, httponly=False, secure=secure, samesite="lax", max_age=28800)
+    response.set_cookie("alrifai_session", result.session_token, domain=_cookie_domain(), httponly=True, secure=secure, samesite="lax", max_age=28800)
+    response.set_cookie("alrifai_csrf", result.csrf_token, domain=_cookie_domain(), httponly=True, secure=secure, samesite="lax", max_age=28800)
     return response
 
 
 @app.get("/change-password", response_class=HTMLResponse)
-def change_password_form(request: Request, message: str = "") -> HTMLResponse:
+def change_password_form(request: Request, message: str = "", return_to: str = "") -> HTMLResponse:
     if _session(request) is None:
         return RedirectResponse("/", status_code=303)
-    return page("Change password", """
+    target = _safe_return_url(return_to)
+    return page("Change password", f"""
         <section class='card narrow'><div class='brand'>AL-RIFAI</div><h1>Change temporary password</h1>
         <p class='muted'>Choose a new password before entering the Owner workspace.</p>
-        <form method='post' action='/change-password'><label>New password<input name='password' type='password' autocomplete='new-password' required></label>
+        <form method='post' action='/change-password'>{_return_field(target or '')}<label>New password<input name='password' type='password' autocomplete='new-password' required></label>
         <label>Confirm password<input name='confirmation' type='password' autocomplete='new-password' required></label>
         <input type='hidden' name='csrf_token' value='""" + html.escape(request.cookies.get("alrifai_csrf", "")) + """'>
         <button type='submit'>Save new password</button></form></section>
@@ -166,18 +213,21 @@ def change_password_form(request: Request, message: str = "") -> HTMLResponse:
 
 
 @app.post("/change-password")
-def change_password_submit(request: Request, password: str = Form(...), confirmation: str = Form(...), csrf_token: str = Form(...)) -> HTMLResponse:
+def change_password_submit(request: Request, password: str = Form(...), confirmation: str = Form(...), csrf_token: str = Form(...), return_to: str = Form("")) -> HTMLResponse:
     token = request.cookies.get("alrifai_session", "")
+    target = _safe_return_url(return_to)
+    if return_to and target is None:
+        return RedirectResponse("/", status_code=303)
     if password != confirmation:
-        return change_password_form(request, "Passwords did not match.")
+        return change_password_form(request, "Passwords did not match.", target or "")
     try:
         with database() as connection:
             change_password(connection, token, csrf_token, password)
     except ValueError as exc:
-        return change_password_form(request, str(exc))
+        return change_password_form(request, str(exc), target or "")
     except (AuthenticationError, RuntimeError, psycopg.Error):
         return RedirectResponse("/", status_code=303)
-    return RedirectResponse("/home", status_code=303)
+    return RedirectResponse(target or "/home", status_code=303)
 
 
 @app.get("/home", response_class=HTMLResponse)
@@ -459,8 +509,8 @@ def logout(request: Request, csrf_token: str = Form(...)) -> RedirectResponse:
     with database() as connection:
         revoke_session(connection, token, csrf_token)
     response = RedirectResponse("/", status_code=303)
-    response.delete_cookie("alrifai_session")
-    response.delete_cookie("alrifai_csrf")
+    response.delete_cookie("alrifai_session", domain=_cookie_domain())
+    response.delete_cookie("alrifai_csrf", domain=_cookie_domain())
     return response
 
 

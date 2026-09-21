@@ -11,6 +11,8 @@
 - Verified read-only VPS DNS, Nginx, TLS, Tailscale, Docker, 9Router, Ollama, and Windows reachability. `alrifai.iamazim.com` resolves to the VPS but has no Nginx block or certificate coverage.
 - Configured Windows Tailscale Serve locally (no VPS change) for the private VPS-to-Windows path: AL-RIFAI on `/` and Open WebUI on `/open-webui`.
 - Added same-origin Open WebUI iframe support and explicit production startup overrides in existing canonical files.
+- Added the canonical `/internal/auth-check` endpoint, opt-in sibling-domain cookie configuration, safe Open WebUI return-target validation, and integration coverage for valid/invalid/revoked/expired sessions.
+- Recreated only the disposable `alrifai-identity-verify-02c` PostgreSQL test container/anonymous volume after proving the prior persisted role password was stale; reapplied the existing schema/migration chain and verified 49 tests.
 - VPS Nginx/certificate work was not performed because `azim` has no passwordless sudo; exact error: `sudo: a password is required`.
 
 - Stored the owner-provided constitution at `docs/architecture/MASTER_ARCHITECTURE.md`.
@@ -52,4 +54,5 @@ No production/VPS migrations or changes, bridge routing changes, 9Router/provide
 7. Open WebUI v0.11.3 is locally pulled and healthy. Its local-only auth is disabled; AL-RIFAI authentication gates `/home`. The first boot may download the embedding model before becoming healthy.
 8. For a public deployment, start the app with `-AlrifaiEnvironment production -OpenWebUIUrl /open-webui/`; do not expose Windows PostgreSQL, Open WebUI, Ollama, or 9Router directly.
 9. The next authorized VPS step is an isolated `alrifai.iamazim.com` Nginx server block and certificate using the existing `/var/www/certbot` webroot pattern, followed by `nginx -t`, reload, and verification of existing domains.
+10. The future Open WebUI hostname must use Nginx `auth_request` against `/internal/auth-check`; set `ALRIFAI_COOKIE_DOMAIN=.alrifai.iamazim.com` only for the public sibling-host deployment and strip the cookie before proxying to Open WebUI.
 10. Do not enable hiring or apply V006 to any database other than the approved isolated local test database without separate owner approval.

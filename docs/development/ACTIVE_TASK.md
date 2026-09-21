@@ -1,14 +1,14 @@
 # Active Development Task
 
 **Task:** Task 03B-03 — Owner account setup and frontend credential management
-**Status:** Implemented locally and verified; public VPS HTTPS configuration is blocked by missing sudo authorization.
+**Status:** Shared authentication gate implemented locally; public VPS HTTPS configuration remains intentionally blocked.
 **Scope:** Initial Owner account, self-service username/password management, administrative user reset, and session revocation.
 
-Follow-up completed in this worktree: local Open WebUI home integration and server-side Admin navigation gate. Open WebUI uses its own `.local-data/open-webui` state. The public design is Nginx on `alrifai.iamazim.com` → Windows Tailscale Serve → AL-RIFAI/Open WebUI; it has not been enabled on VPS.
+Follow-up completed in this worktree: local Open WebUI home integration, server-side Admin navigation gate, and an Nginx-compatible session check. Open WebUI uses its own `.local-data/open-webui` state. Public hostname routing and Nginx installation remain disabled.
 
 ## Next implementation task
 
-After an authorized VPS administrator performs the isolated Nginx/certificate step, verify the real HTTPS login and browser/mobile flow. Do not duplicate provider routing in Open WebUI.
+Before any public Nginx/certificate step, verify the shared parent-domain cookie and `auth_request` flow in an isolated HTTPS environment. Do not expose Open WebUI while `WEBUI_AUTH=false` lacks this gate.
 
 ## Explicitly not authorized by this task
 

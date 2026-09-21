@@ -3,6 +3,7 @@ param(
     [string]$ListenAddress = "127.0.0.1",
     [string]$OpenWebUIUrl = "",
     [string]$AlrifaiEnvironment = "",
+    [string]$CookieDomain = "",
     [switch]$UseVerifiedIdentityVerifyContainer,
     [switch]$SkipOpenWebUI
 )
@@ -42,6 +43,7 @@ if (-not $env:ALRIFAI_DATABASE_URL) { throw "Local database configuration is mis
 if (-not $env:ALRIFAI_ENV) { $env:ALRIFAI_ENV = "local" }
 if ($OpenWebUIUrl) { $env:ALRIFAI_OPEN_WEBUI_URL = $OpenWebUIUrl }
 if ($AlrifaiEnvironment) { $env:ALRIFAI_ENV = $AlrifaiEnvironment }
+if ($CookieDomain) { $env:ALRIFAI_COOKIE_DOMAIN = $CookieDomain }
 
 $probeErrorAction = $ErrorActionPreference
 $ErrorActionPreference = "Continue"

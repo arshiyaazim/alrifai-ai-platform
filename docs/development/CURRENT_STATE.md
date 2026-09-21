@@ -35,6 +35,10 @@
 - Local verification completed: `alrifai-open-webui` is healthy on `127.0.0.1:8502`, returns the Open WebUI HTML shell and `/api/health` returns HTTP 200. First boot downloaded the default embedding model into `.local-data/open-webui`.
 - Authenticated real 9Router completions were verified locally for `general`, `coding`, `fast`, and `auto`; the API key remains runtime-only.
 - The AL-RIFAI home iframe supports same-origin `/open-webui/` deployment while retaining the localhost development default. The existing startup script owns the listen address, environment, and iframe URL overrides.
+- The existing authentication authority now exposes `/internal/auth-check` for future Nginx `auth_request`; it returns only 204 for a valid active session and 401 otherwise. No credentials or principal data are returned.
+- Cross-subdomain session cookies are opt-in through `ALRIFAI_COOKIE_DOMAIN`; local development remains host-only. Production sibling-host use should set the parent domain and strip the cookie before proxying to Open WebUI.
+- Login return targets are validated to relative paths or the two approved HTTPS AL-RIFAI/Open WebUI hosts; arbitrary external redirects are rejected.
+- The isolated PostgreSQL test container was deterministically recreated as test-only infrastructure with the existing identity schema and V006 authentication migration; the full local suite now passes 49 tests.
 - Windows Tailscale Serve is configured locally for the private VPS-to-Windows path; the VPS can reach AL-RIFAI and Open WebUI through the Windows Tailscale hostname.
 - Production HTTPS deployment, email/SMS reset delivery, verified WhatsApp authentication, and MCP actor propagation are not implemented.
 - `alrifai.iamazim.com` DNS resolves to the VPS, but no isolated Nginx server block or certificate exists yet. VPS configuration is blocked because the SSH user lacks passwordless sudo; no VPS files or services were changed.
