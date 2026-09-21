@@ -14,6 +14,7 @@
 - Added the canonical `/internal/auth-check` endpoint, opt-in sibling-domain cookie configuration, safe Open WebUI return-target validation, and integration coverage for valid/invalid/revoked/expired sessions.
 - Recreated only the disposable `alrifai-identity-verify-02c` PostgreSQL test container/anonymous volume after proving the prior persisted role password was stale; reapplied the existing schema/migration chain and verified 49 tests.
 - VPS Nginx/certificate work was not performed because `azim` has no passwordless sudo; exact error: `sudo: a password is required`.
+- Fixed local runtime credential drift: `-UseVerifiedIdentityVerifyContainer` now bypasses a stale `.env.local` database URL and uses the current isolated container credential. The 49-test suite passed, local/Tailscale `/health` returned 200, and unauthenticated `/internal/auth-check` returned 401. No database recreation or VPS change was performed.
 
 - Stored the owner-provided constitution at `docs/architecture/MASTER_ARCHITECTURE.md`.
 - Added root `AGENTS.md` with mandatory initialization, authority, safety, verification, and handoff rules.

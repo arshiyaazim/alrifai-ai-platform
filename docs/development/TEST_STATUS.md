@@ -9,6 +9,7 @@
 | Local 9Router HTTP verification | Passed | Authenticated real completions previously verified for `general`, `coding`, `fast`, and `auto`; secrets omitted |
 | VPS HTTPS/Nginx configuration | Blocked | SSH succeeds, but `sudo` requires an interactive password; no VPS change was attempted |
 | `git diff --check` | Passed | Warning only about Git line-ending normalization |
+| Verified-container runtime credential drift | Passed | Startup derives the current password from the isolated test container; local and Tailscale `/health` returned 200; unauthenticated `/internal/auth-check` returned 401 |
 
 ## Verification boundary
 

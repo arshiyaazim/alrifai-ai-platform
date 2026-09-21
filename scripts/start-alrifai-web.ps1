@@ -13,7 +13,9 @@ $python = Join-Path $PSScriptRoot "..\.venv\Scripts\python.exe"
 if (-not (Test-Path -LiteralPath $python)) { throw "Project virtual environment not found: $python" }
 
 $localConfig = Join-Path $PSScriptRoot "..\.env.local"
-if (-not $env:ALRIFAI_DATABASE_URL -and (Test-Path -LiteralPath $localConfig)) {
+# Verified-container mode must derive credentials from the live test container,
+# not from a possibly stale local database URL.
+if (-not $UseVerifiedIdentityVerifyContainer -and -not $env:ALRIFAI_DATABASE_URL -and (Test-Path -LiteralPath $localConfig)) {
     foreach ($line in Get-Content -LiteralPath $localConfig) {
         if ($line -match '^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
             Set-Item -Path ("Env:" + $matches[1]) -Value $matches[2]

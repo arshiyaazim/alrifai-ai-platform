@@ -40,6 +40,7 @@
 - Login return targets are validated to relative paths or the two approved HTTPS AL-RIFAI/Open WebUI hosts; arbitrary external redirects are rejected.
 - The isolated PostgreSQL test container was deterministically recreated as test-only infrastructure with the existing identity schema and V006 authentication migration; the full local suite now passes 49 tests.
 - Windows Tailscale Serve is configured locally for the private VPS-to-Windows path; the VPS can reach AL-RIFAI and Open WebUI through the Windows Tailscale hostname.
+- Verified-container startup now takes precedence over a stale `.env.local` database URL and derives the current test credential from `alrifai-identity-verify-02c`; local and Tailscale health checks returned HTTP 200.
 - Production HTTPS deployment, email/SMS reset delivery, verified WhatsApp authentication, and MCP actor propagation are not implemented.
 - `alrifai.iamazim.com` DNS resolves to the VPS, but no isolated Nginx server block or certificate exists yet. VPS configuration is blocked because the SSH user lacks passwordless sudo; no VPS files or services were changed.
 - Hiring remains fail-closed until its complete trusted authorization path is integrated.
