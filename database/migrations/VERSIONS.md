@@ -11,3 +11,7 @@ Each migration has:
 - Up SQL
 - Down SQL (rollback where supported)
 - Provenance tracking
+
+`V006__authentication.sql` adds trusted principals, Argon2id credentials,
+server sessions, roles, password resets, and authentication audit attribution.
+It is approved only for the isolated local development database.

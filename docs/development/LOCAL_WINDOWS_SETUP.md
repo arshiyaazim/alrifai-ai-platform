@@ -79,3 +79,70 @@ Copy-Item .env.example .env
 ```
 
 Use a separate development database and development-only credentials. Never copy VPS `.env`, production dumps, employee data, payroll data, or WhatsApp data to the Windows machine.
+
+## 6. PostgreSQL integration tests
+
+The integration suite requires an explicitly isolated local PostgreSQL database.
+Do not point these tests at the Compose database, an existing business database,
+or any VPS database.
+
+Install the project dependency into the local virtual environment:
+
+```powershell
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Set a dedicated test connection string and the isolation flag for the current
+PowerShell session. Do not save credentials in the repository:
+
+```powershell
+$env:ALRIFAI_TEST_DATABASE_URL = "postgresql://<test-user>:<test-password>@127.0.0.1:<random-port>/<test-database>"
+$env:ALRIFAI_TEST_DATABASE_ISOLATED = "1"
+```
+
+Prepare the schema in a disposable PostgreSQL 17 container using
+`database\init-sql\001_identity_foundation.sql`, a separate anonymous or
+explicitly test-owned volume, and a random localhost port. Mount the SQL
+directory read-only. Keep all test records inside that database.
+
+Run the unit suite:
+
+```powershell
+.venv\Scripts\python.exe -m pytest -q
+```
+
+Run only the PostgreSQL integration suite:
+
+```powershell
+.venv\Scripts\python.exe -m pytest -q tests\integration\test_identity_resolver_postgres.py
+```
+
+When testing is complete, verify the container name and volume belong to this
+test run, then remove only those named resources. Do not use `docker compose
+down`, `docker system prune`, or `docker volume prune`. If ownership is
+uncertain, stop and inspect rather than deleting.
+
+## 7. Local web authentication
+
+The local launcher uses the Git-ignored `.env.local` file. Keep its connection
+for the preserved test container only:
+
+```powershell
+.\scripts\start-alrifai-web.ps1
+```
+
+The script verifies the database before starting. The application is served at
+`http://127.0.0.1:8000/`. In VS Code, run
+**Simple Browser: Show** from the Command Palette and enter that URL. Bootstrap
+the approved Owner interactively:
+
+```powershell
+.venv\Scripts\python.exe -m src.alrifai.auth.bootstrap_owner
+```
+
+For local recovery, use the hidden-input command below. It does not send email
+or SMS:
+
+```powershell
+.venv\Scripts\python.exe -m src.alrifai.auth.reset_password azimpolcu
+```

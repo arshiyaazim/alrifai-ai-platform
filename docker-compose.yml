@@ -13,7 +13,7 @@ services:
     networks:
       - alrifai-net
     volumes:
-      - alrifai_db_data:/var/lib/postgresql/data
+      - "./.local-data/postgres:/var/lib/postgresql/data"
       - ./database/init-sql:/docker-entrypoint-initdb.d:ro
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-alrifai}
@@ -42,28 +42,13 @@ services:
       - "127.0.0.1:8502:8080"
     networks:
       - alrifai-net
-      - ai-network
     volumes:
-      - alrifai_open_webui_data:/app/backend/data
+      - "./.local-data/open-webui:/app/backend/data"
     environment:
-      # --- Database (Open WebUI internal data store) ---
-      - POSTGRES_HOST=alrifai-postgres
-      - POSTGRES_DB=${POSTGRES_DB:-alrifai}
-      - POSTGRES_USER=${POSTGRES_USER:-alrifai}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      # --- Ollama Direct ---
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
-      # --- 9Router via ai-network ---
-      - OPENAI_API_BASE_URL=${NINE_ROUTER_URL:-http://9router:20128/v1}
-      - OPENAI_API_KEY=${NINE_ROUTER_API_KEY}
-      # --- Model picker ---
-      - ENABLE_MODEL_FILTER=true
-      - MODEL_FILTER_LIST=phi4-mini:latest;hermes3:3b;nomic-embed-text:latest
-      - DEFAULT_MODELS=${DEFAULT_MODELS:-phi4-mini:latest}
-      # --- Auth ---
-      - WEBUI_AUTH=${WEBUI_AUTH:-true}
-      - ENABLE_SIGNUP=${ENABLE_SIGNUP:-false}
-      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+      # Local-only mode: AL-RIFAI gates /home; Open WebUI stores state in its
+      # own local data directory and does not require a second login.
+      - WEBUI_AUTH=false
+      - ENABLE_SIGNUP=false
       # --- Privacy ---
       - ENABLE_COMMUNITY_SHARING=false
       - SCARF_NO_ANALYTICS=true
@@ -78,9 +63,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
-    depends_on:
-      alrifai-postgres:
-        condition: service_healthy
     logging:
       driver: json-file
       options:
@@ -115,9 +97,3 @@ networks:
     driver: bridge
   ai-network:
     external: true
-
-volumes:
-  alrifai_db_data:
-    name: alrifai_db_data
-  alrifai_open_webui_data:
-    name: alrifai_open-webui-data
