@@ -68,6 +68,7 @@ def test_web_login_owner_dashboard_and_logout(database_url: str, isolated_auth_d
     with psycopg.connect(database_url) as connection:
         create_owner(connection, "azimpolcu", password)
     monkeypatch.setenv("ALRIFAI_DATABASE_URL", database_url)
+    monkeypatch.setenv("ALRIFAI_OPEN_WEBUI_URL", "/open-webui/")
     with TestClient(app) as client:
         assert client.get("/owner", follow_redirects=False).status_code == 303
         bad = client.post("/login", data={"username": "azimpolcu", "password": "wrong-" + uuid4().hex})
@@ -84,6 +85,7 @@ def test_web_login_owner_dashboard_and_logout(database_url: str, isolated_auth_d
         dashboard = client.get("/home")
         assert dashboard.status_code == 200
         assert "Open WebUI AI Chat" in dashboard.text
+        assert "src='/open-webui/'" in dashboard.text
         assert "href='/admin'" in dashboard.text
         logged_out = client.post("/logout", data={"csrf_token": csrf}, follow_redirects=False)
         assert logged_out.status_code == 303

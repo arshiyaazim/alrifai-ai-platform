@@ -3,9 +3,15 @@
 **Date:** 2026-09-21
 **Repository:** `D:\apps\alrifai-ai-platform`
 **Branch:** `feat/windows-local-dev`
-**HEAD:** `e8b67e0e1af844a4970755858c5a3a253e874d3d`
+**HEAD:** `c44a932b1291fc6901c80bd6a2944198727da0d` before this milestone checkpoint
 
 ## Completed this session
+
+- Audited canonical ownership for the FastAPI app, authentication, Docker/Open WebUI, startup scripts, tests, migrations, provider metadata, and development documentation.
+- Verified read-only VPS DNS, Nginx, TLS, Tailscale, Docker, 9Router, Ollama, and Windows reachability. `alrifai.iamazim.com` resolves to the VPS but has no Nginx block or certificate coverage.
+- Configured Windows Tailscale Serve locally (no VPS change) for the private VPS-to-Windows path: AL-RIFAI on `/` and Open WebUI on `/open-webui`.
+- Added same-origin Open WebUI iframe support and explicit production startup overrides in existing canonical files.
+- VPS Nginx/certificate work was not performed because `azim` has no passwordless sudo; exact error: `sudo: a password is required`.
 
 - Stored the owner-provided constitution at `docs/architecture/MASTER_ARCHITECTURE.md`.
 - Added root `AGENTS.md` with mandatory initialization, authority, safety, verification, and handoff rules.
@@ -43,5 +49,7 @@ No production/VPS migrations or changes, bridge routing changes, 9Router/provide
 4. Use `/owner/account` for Owner self-management; password changes require the current password. Administrative resets require a fresh Owner session.
 5. Keep legacy inspection read-only and use `/home/azim/core` only as evidence.
 6. Authenticated web login lands on `/home`, which embeds the local Open WebUI service at `127.0.0.1:8502`; `/admin` is limited to OWNER/ADMIN and `/owner` remains OWNER-only.
-7. Open WebUI v0.11.3 is now locally pulled and healthy. Its local-only auth is disabled; AL-RIFAI authentication gates `/home`. The first boot may download the embedding model before becoming healthy.
-6. Do not enable hiring or apply V006 to any database other than the approved isolated local test database without separate owner approval.
+7. Open WebUI v0.11.3 is locally pulled and healthy. Its local-only auth is disabled; AL-RIFAI authentication gates `/home`. The first boot may download the embedding model before becoming healthy.
+8. For a public deployment, start the app with `-AlrifaiEnvironment production -OpenWebUIUrl /open-webui/`; do not expose Windows PostgreSQL, Open WebUI, Ollama, or 9Router directly.
+9. The next authorized VPS step is an isolated `alrifai.iamazim.com` Nginx server block and certificate using the existing `/var/www/certbot` webroot pattern, followed by `nginx -t`, reload, and verification of existing domains.
+10. Do not enable hiring or apply V006 to any database other than the approved isolated local test database without separate owner approval.

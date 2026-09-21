@@ -2,7 +2,7 @@
 
 **Repository:** `D:\apps\alrifai-ai-platform`
 **Branch:** `feat/windows-local-dev`
-**HEAD observed:** `e8b67e0e1af844a4970755858c5a3a253e874d3d`
+**HEAD observed:** `c44a932b1291fc6901c80bd6a2944198727da0d`
 **Architecture authority:** `docs/architecture/MASTER_ARCHITECTURE.md`
 
 ## Implemented and locally verified
@@ -33,7 +33,11 @@
 - Local web home integration now gates `/home` with the AL-RIFAI session and embeds the pinned Open WebUI v0.11.3 service on `127.0.0.1:8502`; local Open WebUI auth is disabled because AL-RIFAI is the development gate.
 - Authenticated login now lands on `/home`; `/admin` is server-side restricted to OWNER/ADMIN and `/owner` remains OWNER-only.
 - Local verification completed: `alrifai-open-webui` is healthy on `127.0.0.1:8502`, returns the Open WebUI HTML shell and `/api/health` returns HTTP 200. First boot downloaded the default embedding model into `.local-data/open-webui`.
+- Authenticated real 9Router completions were verified locally for `general`, `coding`, `fast`, and `auto`; the API key remains runtime-only.
+- The AL-RIFAI home iframe supports same-origin `/open-webui/` deployment while retaining the localhost development default. The existing startup script owns the listen address, environment, and iframe URL overrides.
+- Windows Tailscale Serve is configured locally for the private VPS-to-Windows path; the VPS can reach AL-RIFAI and Open WebUI through the Windows Tailscale hostname.
 - Production HTTPS deployment, email/SMS reset delivery, verified WhatsApp authentication, and MCP actor propagation are not implemented.
+- `alrifai.iamazim.com` DNS resolves to the VPS, but no isolated Nginx server block or certificate exists yet. VPS configuration is blocked because the SSH user lacks passwordless sudo; no VPS files or services were changed.
 - Hiring remains fail-closed until its complete trusted authorization path is integrated.
 - Database uniqueness hardening for employee/person, normalized phones, and business-event idempotency.
 - Canonical message storage and channel adapters.
@@ -41,4 +45,4 @@
 
 ## Worktree note
 
-The worktree contains pre-existing uncommitted local-development, identity, service, test, and 9Router/Copilot changes. They must be preserved and reviewed before any commit.
+The current milestone contains only the reviewed local startup, iframe, integration-test, and continuity-documentation changes. Runtime state remains excluded in `.gitignore`.

@@ -1,5 +1,8 @@
 param(
     [int]$Port = 8000,
+    [string]$ListenAddress = "127.0.0.1",
+    [string]$OpenWebUIUrl = "",
+    [string]$AlrifaiEnvironment = "",
     [switch]$UseVerifiedIdentityVerifyContainer,
     [switch]$SkipOpenWebUI
 )
@@ -37,6 +40,8 @@ if (-not $env:ALRIFAI_DATABASE_URL -and $UseVerifiedIdentityVerifyContainer) {
 }
 if (-not $env:ALRIFAI_DATABASE_URL) { throw "Local database configuration is missing. Create .env.local or set ALRIFAI_DATABASE_URL." }
 if (-not $env:ALRIFAI_ENV) { $env:ALRIFAI_ENV = "local" }
+if ($OpenWebUIUrl) { $env:ALRIFAI_OPEN_WEBUI_URL = $OpenWebUIUrl }
+if ($AlrifaiEnvironment) { $env:ALRIFAI_ENV = $AlrifaiEnvironment }
 
 $probeErrorAction = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
@@ -53,4 +58,4 @@ if (-not $SkipOpenWebUI) {
     if ($LASTEXITCODE -ne 0) { throw "Open WebUI could not be started by Docker Compose." }
 }
 
-& $python -m uvicorn src.alrifai.web.app:app --host 127.0.0.1 --port $Port --reload
+& $python -m uvicorn src.alrifai.web.app:app --host $ListenAddress --port $Port --reload

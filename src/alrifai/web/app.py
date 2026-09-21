@@ -187,12 +187,13 @@ def authenticated_home(request: Request) -> HTMLResponse:
         return RedirectResponse("/", status_code=303)
     principal, _ = session
     admin_link = "<a class='admin-link' href='/admin'>Admin</a>" if principal.principal_type in {PrincipalType.OWNER, PrincipalType.ADMIN} else ""
+    webui_url = html.escape(os.getenv("ALRIFAI_OPEN_WEBUI_URL", "http://127.0.0.1:8502/"), quote=True)
     return page("Home", f"""
       <div class='app-shell'>
         <header class='app-bar'><div class='brand'>AL-RIFAI</div><nav class='app-nav'><a href='/home'>Home</a>{admin_link}
           <form method='post' action='/logout'><input type='hidden' name='csrf_token' value='{html.escape(request.cookies.get('alrifai_csrf',''))}'><button class='secondary'>Log out</button></form>
         </nav></header>
-        <main class='webui-frame-wrap'><iframe class='webui-frame' src='http://127.0.0.1:8502/' title='Open WebUI AI Chat'></iframe></main>
+        <main class='webui-frame-wrap'><iframe class='webui-frame' src='{webui_url}' title='Open WebUI AI Chat'></iframe></main>
       </div>
     """)
 
