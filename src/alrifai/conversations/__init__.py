@@ -68,6 +68,14 @@ from .context import (
     ContextStatus, ContextTopic, ContextTurn, PostgresContextSource,
     RelationshipStatus,
 )
+from .interpretation import (
+    AddressStyle, EvidenceState, ExtractedClaim, FailureReason, GoalEvidence,
+    GroundingEvidence, HermesAdapterResponse, HermesProviderError,
+    InterpretationAdapter, InterpretationConfig, InterpretationRequest, InterpretationResult,
+    InterpretationService, InterpretationStatus, IntentHypothesis,
+    KnowledgeAuthority, KnowledgeEvidence, SubjectReference, TopicAssociation,
+    TopicRelation, WorkflowRequirement,
+)
 
 __all__ = [
     "ActorType",
@@ -133,4 +141,25 @@ __all__ = [
     "ContextTurn",
     "PostgresContextSource",
     "RelationshipStatus",
+    "AddressStyle",
+    "EvidenceState",
+    "ExtractedClaim",
+    "FailureReason",
+    "GoalEvidence",
+    "GroundingEvidence",
+    "HermesAdapterResponse",
+    "HermesProviderError",
+    "InterpretationAdapter",
+    "InterpretationConfig",
+    "InterpretationRequest",
+    "InterpretationResult",
+    "InterpretationService",
+    "InterpretationStatus",
+    "IntentHypothesis",
+    "KnowledgeAuthority",
+    "KnowledgeEvidence",
+    "SubjectReference",
+    "TopicAssociation",
+    "TopicRelation",
+    "WorkflowRequirement",
 ]

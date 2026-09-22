@@ -1,12 +1,20 @@
 # Active Development Task
 
-## Current authorized task — C7 (gated on C6 backup) (2026-09-22)
+## Current authorized sequence — offline C7 checkpoint, then live-route qualification (2026-09-22)
+
+Phase A is in progress: selectively checkpoint the reviewed offline C7 baseline and independently verify the authorized `feat/windows-local-dev` remote. Phase B audits existing provider/routing architecture; Phase C may add only the minimum provider-neutral C7 adapter wiring; Phase D performs controlled synthetic live inference only through an approved existing route. If the route is unavailable, stop with C7 PARTIAL. Do not start C8/C9, build the Recruitment Knowledge Hub, send outbound messages, or change production/VPS. No C7 final checkpoint is permitted unless live qualification succeeds.
+
+## Current checkpoint — C7 bounded interpretation (2026-09-22, 14:59 +06:00)
+
+C1–C6 implementation baseline is backed up at `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`; latest C6 policy-alignment documentation edits in this worktree are local-only. C7 artifacts were forensically reviewed: MODIFY the existing implementation while keeping the canonical module/test location; harden bounded input, safe typed adapter failure, and current non-illustrative grounding. C7 is PARTIAL pending an approved real adapter/live inference qualification; offline focused tests pass. C7 is local-only/uncommitted/unpushed. C8/C9 are NOT STARTED. No Recruitment Knowledge Hub, reply generation, dispatch, or outbound sending.
+
+## Historical Phase A / pre-C7 task record — superseded above (2026-09-22)
 
 Phase A is C6 qualification and authorized checkpoint backup. C6 unit 25 passed; disposable PostgreSQL 17 integration subset 15 passed; broad DB-enabled suite excluding protected seeded-Owner web-auth fixture 122 passed; full no-DB suite 107 passed/20 skipped. No C6 migration. Remote fetch matched parent `c2852a47323b74c92cd56eaa946e319b4f1d0500` before the checkpoint. C7 must begin only after the C6 checkpoint commit is pushed and remote HEAD/tree are independently verified. No C7 changes are part of the C6 commit.
 
 Phase B, if the Phase A hard gate passes: implement and qualify C7 Hermes Interpretation and Extraction only. Do not build the Recruitment Knowledge Hub; do not implement C8 dispatch, C9 reply generation/outbound delivery, or channel sending. Preserve missing Recruitment knowledge and unconfirmed office address as explicit gaps. C7 is not remotely backed up and must remain uncommitted/unpushed.
 
-**Next task:** C7 — Hermes Interpretation and Extraction, authorized by Owner but only after Phase A remote backup verification.
+**Next task:** Complete C7 live adapter qualification only if an approved route becomes available; otherwise preserve the exact C7 gap and await Owner direction. C8/C9 are NOT STARTED and require explicit Owner approval.
 
 ## Previous task checkpoint — C1–C6 policy alignment (2026-09-22)
 

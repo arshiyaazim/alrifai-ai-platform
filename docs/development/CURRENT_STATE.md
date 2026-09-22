@@ -1,6 +1,18 @@
 # AL-RIFAI Current State
 
-## Current verified checkpoint — C6 qualification (2026-09-22, Asia/Dhaka)
+## Latest verified checkpoint — C7 offline baseline qualification (2026-09-22, Asia/Dhaka)
+
+Repository `D:/apps/alrifai-ai-platform`; branch `feat/windows-local-dev`; starting HEAD and origin branch are `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`. C1–C6 baseline is remotely verified there. C7 existing canonical module/tests were reviewed and kept with bounded safety fixes; offline tests pass, but no provider route/live inference has been verified. Offline C7 files are being selectively checkpointed; remote checkpoint SHA is pending independent post-push verification. The four unrelated modifications remain unchanged and excluded. No C7 persistence, VPS/production, auth, channel, Hermes runtime, reply generation, domain mutation, C8, or C9 changes.
+
+Fresh qualification: C7 focused 35 passed; selected C1–C6/identity/auth regression 107 passed, 5 DB-gated skipped; full no-DB suite 142 passed, 20 DB-gated skipped; conversation package compile passed. The five selected DB skips and twenty full-suite DB skips are not passes. C7 has no persistence, so PostgreSQL qualification is not required. The remaining C7 gate is identifying and safely invoking an approved live model route; no route or credentials may be invented.
+
+## Current verified state — C7 local implementation checkpoint (2026-09-22, 14:59 +06:00)
+
+Repository `D:/apps/alrifai-ai-platform`; branch `feat/windows-local-dev`; local HEAD and origin tracking ref both `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c` (remote checkpoint previously independently verified). The C1–C6 implementation baseline is backed up at that SHA; latest C6 policy-alignment documentation edits in this worktree are local-only. C7 implementation is LOCAL, UNCOMMITTED, UNPUSHED, and PARTIAL: the bounded structured interpreter uses an injected provider-neutral adapter; no live Hermes/model route was selected or exercised. C8/C9 are not started. C7 added no persistence/migration. Current checks: focused C7 35 passed; selected C1–C6/C7 regression 135 passed; full no-DB suite 142 passed, 20 database-gated skipped; compile passed, `git diff --check` passed, and tracked-diff/untracked secret scan passed. Existing PostgreSQL containers were observed but not used or modified. Recruitment knowledge source and exact office address remain unresolved.
+
+C7 changes: `src/alrifai/conversations/interpretation.py` (untracked), `tests/test_conversation_interpretation.py` (untracked), `src/alrifai/conversations/__init__.py`, `MCP-Servers/conversations-ai/FINAL_IMPLEMENTATION_SPEC.md`, `MCP-Servers/conversations-ai/WORKFLOWS.md`, `docs/architecture/ARCHITECTURE_DECISIONS.md`, and continuity files. Four unrelated worktree modifications remain preserved unchanged: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, `tests/integration/test_web_auth_postgres.py`. No VPS, production DB, auth, channel, or Hermes runtime changed.
+
+## Historical C6 qualification checkpoint — superseded by C7 state above (2026-09-22)
 
 Repository `D:\\apps\\alrifai-ai-platform`; branch `feat/windows-local-dev`; HEAD before checkpoint commit `c2852a47323b74c92cd56eaa946e319b4f1d0500`. C1–C5 are remotely backed up at that baseline; C6 changes are the reviewed local delta pending the authorized commit/push. C6 focused unit tests: 25 passed; C1–C5/C6 PostgreSQL integration subset on a task-created disposable loopback PostgreSQL 17: 15 passed; DB-enabled regression excluding the protected web-auth fixture: 122 passed; no-DB full suite: 107 passed, 20 skipped. No migration was added. C7 has not started; C7 implementation is Owner-authorized only after independent C6 remote backup verification.
 

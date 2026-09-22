@@ -1,6 +1,26 @@
 # Agent Handoff
 
-## Current handoff — C6 backup gate then C7 (2026-09-22, Asia/Dhaka)
+## Latest handoff — C7 offline checkpoint / live adapter gate (2026-09-22)
+
+1. Repo `D:/apps/alrifai-ai-platform`, branch `feat/windows-local-dev`; starting HEAD `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`, matching the verified C6 remote baseline at session start. Offline C7 checkpoint is authorized; record its exact commit/remote SHA only after independent verification.
+2. C7 canonical implementation remains `src/alrifai/conversations/interpretation.py`, export in `src/alrifai/conversations/__init__.py`, tests in `tests/test_conversation_interpretation.py`. Decision on prior unapproved artifacts: MODIFY, not replace. Offline qualification: 35 focused passed; selected C1–C6/identity/auth 107 passed/5 DB-gated skipped; full no-DB 142 passed/20 DB-gated skipped; compile passed. These are offline/test-double results.
+3. Four unrelated changes must remain untouched and excluded from C7 commits: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, `tests/integration/test_web_auth_postgres.py`.
+4. After offline remote backup is independently verified, audit existing routing/provider architecture. Use an approved existing route only; VPS, if needed, is read-only. No keys/config changes, production mutations, live Hermes/gateway changes, or outbound messages. If no authorized route is available, stop with C7 PARTIAL.
+5. C7 is interpretation/extraction only: no reply generation, domain mutation/dispatch, Recruitment Knowledge Hub, C8, or C9. Employee ID remains the designated normalized Bangladesh mobile. Address and knowledge facts remain unresolved; do not invent.
+6. C7 has no persistence/migration. No database qualification required; no DB was used. No C7 final commit/push unless controlled live inference and all qualification gates pass.
+
+## Current handoff — C7 local-only checkpoint (2026-09-22, 14:59 +06:00)
+
+1. Repo `D:/apps/alrifai-ai-platform`; branch `feat/windows-local-dev`; HEAD and origin tracking ref `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`. That SHA backs the accepted C1–C6 implementation baseline; latest C6 policy-alignment documentation edits and current C7 changes are local/uncommitted/unpushed.
+2. Forensic decision on pre-existing unapproved C7 artifacts: MODIFY, retaining canonical `interpretation.py`, package export, and focused tests. Hardening now includes a 64k serialized-input cap, typed fail-closed handling for unexpected adapter errors, and exclusion of stale/illustrative sources from current grounding.
+3. C7 status PARTIAL: offline structured interpreter and its provider-neutral adapter interface are implemented; live model/provider routing and inference were NOT selected/run. C7 has no migration/persistence. C8/C9 are NOT STARTED.
+4. Fresh checks: focused C7 35 passed; selected C1–C6/C7 regression 135 passed; full no-DB 142 passed/20 DB-gated skipped. PostgreSQL was not used; C7 persistence qualification is NOT REQUIRED. No live inference claim.
+5. Read first: `AGENTS.md`, the Conversations final spec, C6 context, C4 topics, C5 instructions, the Owner natural-conversation ADR, then this checkpoint/test status. C7 module: `src/alrifai/conversations/interpretation.py`; tests: `tests/test_conversation_interpretation.py`.
+6. No approved Recruitment knowledge source/current policy facts found. Office display unresolved. Do not invent or communicate these as facts.
+7. Preserve four unrelated modified files: `docker-compose.yml`; `scripts/start-alrifai-web.ps1`; `src/alrifai/web/app.py`; `tests/integration/test_web_auth_postgres.py`.
+8. No commit/push authorized or performed for C7. Do not start C8/C9. Do not modify VPS, production, DB, channels, auth, or Hermes runtime. Next action: C7 adapter qualification only if an Owner-approved route/configuration is supplied; otherwise stop for Owner direction.
+
+## Historical pre-backup handoff — superseded by C7 local-only handoff above (2026-09-22)
 
 1. Repository `D:\\apps\\alrifai-ai-platform`, branch `feat/windows-local-dev`; current local HEAD before authorized C6 commit is `c2852a47323b74c92cd56eaa946e319b4f1d0500`. The fresh remote fetch matched that parent. Four unrelated worktree modifications are preserved and excluded: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, `tests/integration/test_web_auth_postgres.py`.
 2. C1–C5 form the remotely backed baseline. C6 is implemented in `src/alrifai/conversations/context.py` and exported by `src/alrifai/conversations/__init__.py`; tests are `tests/test_conversation_context.py` and `tests/integration/test_conversation_context_postgres.py`; no migration. C6 focused unit tests 25 passed; fresh C1–C5/C6 PG subset 15 passed; broad DB-enabled regression excluding protected web-auth fixture 122 passed; no-DB suite 107 passed/20 skipped.
@@ -43,7 +63,7 @@
 
 ## C5 roadmap (plans only; not implementation authorization)
 
-C6 — Bounded Semantic Context Retrieval; C7 — Hermes Interpretation and Extraction; C8 — Canonical Domain Dispatch; C9 — Contextual Replies and Outbound; C10 — Audit and Recovery; C11 — Semantic Regression Corpus; C12 — Controlled Activation. All are NOT STARTED and require separate Owner approval.
+C6 — Bounded Semantic Context Retrieval; C7 — Hermes Interpretation and Extraction (local PARTIAL; live adapter qualification unresolved); C8 — Canonical Domain Dispatch; C9 — Contextual Replies and Outbound; C10 — Audit and Recovery; C11 — Semantic Regression Corpus; C12 — Controlled Activation. C8–C12 are plans only, NOT STARTED, and require separate Owner approval.
 
 **Date:** 2026-09-21
 **Repository:** `D:\apps\alrifai-ai-platform`

@@ -1,5 +1,30 @@
 # Test Status
 
+## Fresh offline C7 qualification for authorized baseline checkpoint — 2026-09-22
+
+| Scope | Actual result | Notes |
+|---|---:|---|
+| C7 focused | PASSED — 35 | `PYTHONPATH=src .venv/Scripts/python.exe -m pytest -q tests/test_conversation_interpretation.py`; injected test adapter only, not live inference. |
+| Selected C1–C6 conversation/identity/auth regression | PASSED — 107; SKIPPED — 5 | Explicit selected modules including C1–C6 unit tests, identity/phone/auth tests, and PostgreSQL-gated conversation integrations; no DB URL supplied. |
+| Full no-DB suite | PASSED — 142; SKIPPED — 20 | `PYTHONPATH=src .venv/Scripts/python.exe -m pytest -q`; all 20 skips DB-gated. |
+| Compile/import | PASSED | `.venv/Scripts/python.exe -m compileall -q src/alrifai/conversations`. |
+| PostgreSQL | NOT REQUIRED for C7 | No C7 persistence/migration; no database was used or changed. Historical C1–C6 PostgreSQL results were not rerun here. |
+| Live model inference | NOT RUN / UNVERIFIED | No approved route is established yet. |
+| `git diff --check` / secret scan | PASSED | Run against intended offline C7 file scope before checkpoint; secret scan must include untracked C7 files and staged content. |
+
+## C7 local implementation qualification — 2026-09-22, 14:59 +06:00
+
+| Scope | Actual result | Notes |
+|---|---:|---|
+| C7 focused | PASSED — 35 | `PYTHONPATH=src .venv/Scripts/python.exe -m pytest -q tests/test_conversation_interpretation.py`; offline fake adapter only. |
+| Selected C1–C6 + C7 conversation/identity/authorization regression | PASSED — 135 | Explicit selected-module run; no DB URL supplied. |
+| Full repository, no DB target | PASSED — 142; SKIPPED — 20 | All skipped tests are DB-gated; no skip counted as pass. |
+| Compile/import | PASSED | `.venv/Scripts/python.exe -m compileall -q src/alrifai/conversations`. |
+| PostgreSQL qualification | NOT REQUIRED for C7 | C7 adds no persistence or migration. Existing development containers were inspected but not used or modified. C1–C6 PG subset was not rerun in this task; historical separate PG qualification remains historical evidence only. |
+| Live model inference | NOT RUN / UNVERIFIED | No provider/model route was selected or called; offline adapter contract is not live inference evidence. |
+| `git diff --check` | PASSED | Only Git LF-to-CRLF working-copy warnings; no whitespace errors. |
+| Tracked-diff/untracked high-confidence secret scan | PASSED | Private-key, cloud/GitHub/OpenAI token and JWT-shaped credential patterns: 0 matches. |
+
 ## C6 fresh qualification for authorized checkpoint (2026-09-22, Asia/Dhaka)
 
 | Scope | Actual result | Notes |

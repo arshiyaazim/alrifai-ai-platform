@@ -1,6 +1,6 @@
 # Conversations & AI MCP — Final Implementation Specification
 
-**Status:** Canonical staged implementation specification. C1–C5 are accepted baselines; C6 is implemented locally and uncommitted/unpushed. Later stages require explicit Owner authorization.
+**Status:** Canonical staged implementation specification. C1–C6 are backed up at checkpoint cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c. C7 structured interpretation is implemented locally behind an injected, provider-neutral adapter and is not remotely backed up; live inference is NOT VERIFIED. C8/C9 and later stages are not started.
 **Owner:** Communications / AI
 **Server count:** One consolidated Conversations & AI MCP. Channels, Hermes, topics, message storage, and Admin AI instructions are capabilities of this server, not separate MCP servers.
 
@@ -261,9 +261,9 @@ Future sequence:
 | C2 | Identity, phone, platform, Person, and subject resolution | ambiguity, historical phone, isolation tests; disable resolver | shadow/read-only |
 | C3 | Ordered history and burst/turn aggregation | ordering, late continuation, reply-boundary tests; disable aggregation | shadow |
 | C4 | Topic state, closure, switching, repetition | lifecycle and contamination tests; disable topic writes | shadow |
-| C5 | Versioned Admin/Owner instruction state and selection | trusted lifecycle, scoped deterministic selection, Owner-over-Admin same-subject conflict precedence, audit/evidence, expiry/supersession tests | implemented locally; no remote backup |
-| C6 | Bounded, authorized context retrieval over canonical messages, turns, topics, and instructions | scope/privacy, evidence, bounds, stale exclusion and reconstruction tests; revert to minimal context | implemented locally; read-only; uncommitted/unpushed |
-| C7 | Structured semantic interpretation and extraction through an approved routing adapter; no final reply | Bangla/Banglish/misspelling/context, grounding, uncertainty, privacy, injection, decision-boundary tests; disable interpreter | NOT STARTED; implementation-ready specification below; Owner approval required |
+| C5 | Versioned Admin/Owner instruction state and selection | trusted lifecycle, scoped deterministic selection, Owner-over-Admin same-subject conflict precedence, audit/evidence, expiry/supersession tests | included in remotely backed C1–C6 checkpoint cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c |
+| C6 | Bounded, authorized context retrieval over canonical messages, turns, topics, and instructions | scope/privacy, evidence, bounds, stale exclusion and reconstruction tests; revert to minimal context | qualified and remotely backed up at cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c |
+| C7 | Structured semantic interpretation and extraction through an injected provider-neutral adapter; no final reply | Focused C7 tests and C1–C6 unit regression pass; disable interpreter | implemented locally; offline adapter contract verified; live inference NOT VERIFIED |
 | C8 | Domain dispatch contracts | authorization, schema, idempotency, failure tests; stop dispatch | no writes |
 | C9 | Reply and outbound orchestration | approval, duplicate, delivery evidence tests; stop outbound | draft/approval |
 | C10 | Audit, observability, recovery/reprocessing | trace, retry, redaction, recovery tests; disable workers | shadow |
@@ -280,7 +280,7 @@ No C3 turn table or migration is required. A turn is deterministically identifie
 
 C4 is implemented in `src/alrifai/conversations/topics.py` as a deterministic topic state machine over typed topic/transition proposals. It persists `conversation_topics` and immutable `conversation_topic_transitions` through V008 so state and history survive restart. Valid transitions, optimistic state versions, scoped idempotency, closure evidence, explicit reopening evidence, conversation scope, and C3 late-arrival conflicts are validated without semantic classification.
 
-C4 does not classify natural language, select Admin instructions, call Hermes, retrieve semantic history, generate replies, dispatch domain actions, or send outbound messages. C5 adds instruction state/selection only. C6 implementation is recorded below; C7 and later remain unimplemented and require separate Owner approval.
+C4 does not classify natural language, select Admin instructions, call Hermes, retrieve semantic history, generate replies, dispatch domain actions, or send outbound messages. C5 adds instruction state/selection only. C6 and C7 implementation/qualification are recorded below; C8/C9 and later remain unimplemented and require separate Owner approval.
 
 ### C5 implementation decision
 
@@ -298,7 +298,7 @@ No stage may begin automatically because the preserved C1 files exist. Each late
 
 ## 20. Definition of ready
 
-This specification remains the authority for staged implementation. C1–C5 are accepted and backed up at `c2852a47323b74c92cd56eaa946e319b4f1d0500`. C6 is implemented locally; focused and isolated PostgreSQL checks passed. The DB-enabled broad suite had unrelated auth-fixture errors against the seeded Owner database, documented in continuity. C6 is uncommitted/unpushed. C7 is NOT STARTED and requires explicit Owner approval.
+This specification remains the authority for staged implementation. C1–C6 are accepted and remotely backed up at cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c. C7 is implemented locally and uncommitted with offline adapter-contract qualification; no live model inference or route activation is verified. C8/C9 are not started.
 
 ### C6-to-C7 relationship evidence correction
 
@@ -351,4 +351,10 @@ If a candidate lacks a document, C7 must not infer rejection. It may identify th
 
 **Prerequisites/open source gaps:** no approved Recruitment knowledge corpus/service or concrete role/salary/document policy records were found in the current repository. Recruitment specification already identifies the canonical Role/policy source as an implementation prerequisite. C7 must emit `required_domain_reads`/unknown until that authorized read source exists; do not add a knowledge store inside Conversations. No canonical office address was found in repository search. The Owner must confirm whether “AK Khan Mor, Pahartali, Chattogram” and “AK Khan Mor, Victoria No. 1 Gate” are the same location and provide the exact approved display address before either is communicated as a fact.
 
-`C7` remains NOT STARTED. This contract is implementation-ready, but Owner approval is required before C7 work begins.
+### C7 local implementation and qualification record
+
+The local implementation is `src/alrifai/conversations/interpretation.py`, exported through the existing Conversations package, with focused coverage in `tests/test_conversation_interpretation.py`. It consumes exactly one bounded C6 package, preserves source text and evidence references, produces versioned structured hypotheses/claims/goal/topic associations, applies the C6 verified-current-employee tone evidence, and refuses unsupported canonical references, closed-topic reopening, verified/staff-review promotion, protected actions, and untrusted instruction elevation. It performs no persistence, dispatch, reply generation, or outbound delivery.
+
+The adapter boundary is injected and provider-neutral; no provider/model is selected, no live Hermes/9Router request was made, and no production route was changed. C7 serialized adapter input is capped at 64,000 characters and model output at 32,000 characters. Only current evidence that is neither illustrative nor historical/superseded can be returned as current grounding. Adapter failures are converted to typed abstention without exposing exception text. PostgreSQL qualification is not required because C7 adds no persistence or migration. Offline focused and repository test outcomes are recorded in `docs/development/TEST_STATUS.md`; database-gated tests remain explicitly skipped in the full no-DB run.
+
+C7 remains local-only/uncommitted. C8 dispatch, C9 reply/outbound, the full Recruitment Knowledge Hub, and live channel/model activation are not implemented. Missing approved Recruitment knowledge and the unresolved office display remain blockers to grounded claims about those facts.

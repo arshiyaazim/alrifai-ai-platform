@@ -1,6 +1,19 @@
 # Current Blockers and Required Decisions
 
-## Current checkpoint — C6 backup gate and C7 prerequisites (2026-09-22)
+## Latest C7 qualification gate — 2026-09-22
+
+- Live route is not yet audited beyond local repository/configuration sources; no in-application approved model adapter or route contract was found. After the offline baseline remote backup verifies, inspect remaining approved local routing evidence and, only if needed, use existing authorized read-only VPS access. If no existing approved route/authentication is safely usable, mark live inference BLOCKED/UNVERIFIED and stop; do not invent a provider, model, credential, or configuration.
+- Recruitment Knowledge Hub and exact office address remain unresolved; neither blocks generic C7 interpretation, and no facts may be invented.
+- C8/C9 are not started. No production, VPS, database, authentication, channel, Hermes, or gateway configuration changes are allowed.
+
+## Current checkpoint — C7 qualification (2026-09-22, 14:59 +06:00)
+
+- C7 local interpreter contract and offline qualification are implemented. Remaining C7 gap: no approved concrete Hermes/model-routing adapter configuration was available, so live inference is NOT VERIFIED. Do not invent/select a provider/model or alter a running route to close this gap.
+- No approved canonical Recruitment knowledge corpus or current role, salary, document-alternative or joining facts were found. Keep such facts unknown or use future typed domain reads.
+- Exact office display still requires Owner confirmation: “AK Khan Mor, Pahartali, Chattogram” versus “AK Khan Mor, Victoria No. 1 Gate”.
+- C8/C9 remain not started and require explicit Owner approval. No C7 persistence was added; no VPS, production DB, auth, channel, or Hermes runtime change occurred.
+
+## Historical pre-C6-backup checkpoint — superseded by C7 prerequisites above (2026-09-22)
 
 - C6 has no remaining reported implementation defect; current fresh qualification: 25 C6 unit tests passed, 15 focused PostgreSQL integration tests passed on disposable loopback PG17, broad DB-enabled suite excluding the seeded-Owner web-auth safety fixture passed 122, and no-DB suite passed 107 with 20 DB-gated skips.
 - Phase A backup gate remains pending until the exact C6 checkpoint commit is pushed and remote branch HEAD/tree are independently verified. C7 must not run before that gate passes.

@@ -1,6 +1,6 @@
 # Conversations and AI Workflows
 
-The complete design is [`FINAL_IMPLEMENTATION_SPEC.md`](FINAL_IMPLEMENTATION_SPEC.md). C1–C4 structural foundations are implemented and qualified; semantic/Admin/Hermes/dispatch/reply/outbound stages remain paused pending explicit Owner approval.
+The complete design is [`FINAL_IMPLEMENTATION_SPEC.md`](FINAL_IMPLEMENTATION_SPEC.md). C1–C6 are accepted foundations. C7 structured interpretation is implemented locally with an offline-tested provider-neutral adapter seam; no live model inference or route activation is verified. C8 dispatch, C9 reply/outbound, and channel activation remain not started.
 
 Inbound Bridge/Meta/Messenger/social/admin relay → preserve source phone/platform identity and timestamps → normalize source and IDs → persist raw evidence → deduplicate → resolve Person → retrieve ordered/relevant context → maintain topic state → semantic classify/extract → apply latest applicable Admin instruction → route to a domain service → receive policy/result → queue reply → track delivery.
 
