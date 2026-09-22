@@ -1,5 +1,15 @@
 # Active Development Task
 
+## Latest checkpoint — 2026-09-22
+
+**Current status:** C5 — Versioned Admin/Owner AI Instruction State and Selection is implemented and locally qualified. C5 work is uncommitted; do not commit or push without separate Owner authorization. The C1–C4 accepted baseline remains backed up at `5859bb178738346d6e5cb8ff41e6247495944b92`.
+
+**Next proposed task:** C6 — Bounded Semantic Context Retrieval.
+
+**C6 status:** NOT STARTED — OWNER APPROVAL REQUIRED. No work may begin automatically.
+
+The confirmed Owner/Admin precedence applies only when instructions conflict on the same subject: effective Owner wins there; instructions about other subjects remain applicable. Same-authority unresolved conflict fails closed. Canonical policy/auth/domain services remain authoritative. The four pre-existing unrelated local edits are preserved; see `CHECKPOINT_MANIFEST.md`.
+
 **Task:** Complete repaired development Owner login and freeze authentication baseline; complete approved Conversations & AI stages through C4
 **Status:** Owner authentication baseline completed; Conversations & AI C1–C4 implemented and qualified; development checkpoint saved for Owner break.
 **Scope:** Existing login/session contracts, deterministic development database selection, isolated regression coverage, continuity updates, and read-only public-flow verification.

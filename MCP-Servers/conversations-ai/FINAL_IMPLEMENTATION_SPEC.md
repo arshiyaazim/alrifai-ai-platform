@@ -142,17 +142,11 @@ Missing-information extraction distinguishes `unknown`, `provided`, `candidate_c
 
 Admin/Owner instructions are versioned guidance records containing instruction ID/version, domain, topic/role/audience/channel scope, priority, instruction text or approved reference, issuer, issued/effective/expiry times, supersession, active status, and provenance/audit references. Historical versions are immutable.
 
-Applicable instruction selection is deterministic:
+Applicable instruction selection is deterministic. First exclude unauthorized, inactive, not-yet-effective, expired, revoked, superseded, or out-of-scope versions. Partition remaining guidance by canonical subject. For each subject, same-authority candidates rank by scope specificity, explicit priority, effective time, then version; unresolved equal-rank differences fail closed with evidence, never by row order or database ID. When effective Owner and Admin instructions conflict on the same subject, Owner wins only for that subject. Unrelated subjects remain independently applicable; equivalent guidance may both be retained. Canonical business policy and authorization constraints remain above every instruction.
 
-1. security and authorization constraints;
-2. canonical deterministic business rules and authoritative domain data;
-3. effective time window and active status;
-4. most specific domain/topic/role/audience/channel scope;
-5. explicit priority;
-6. latest version;
-7. otherwise review/error on unresolved conflict.
+C5 stores immutable versions and append-only lifecycle evidence in `conversation_ai_instruction_versions` and `conversation_ai_instruction_events` (V009), with every lifecycle write authorized via `TrustedPrincipal` and central `MANAGE_CONVERSATIONS`, plus canonical `audit_log` attribution. Admins cannot revise or alter Owner-issued instruction lifecycle. A future-effective superseding version leaves the prior version applicable until its effective time. Topic-scoped guidance is excluded for closed/completed C4 topics and never reopens them. Selection returns inclusion/exclusion evidence; unresolved same-authority conflict raises a structured conflict with evidence.
 
-The reply/extraction audit stores the selected instruction IDs and versions, policy/data references, and applicability decision. Free-text instructions may guide wording, questions, collection, escalation, temporary priorities, and response style; they cannot authorize writes, override identity, change Employee ID, approve hiring, create payments, assign rosters, or bypass domain validation.
+Free-text instructions guide communication only. They cannot authorize writes, override identity, change Employee ID, approve hiring, create payments, assign rosters, or bypass domain validation. External messages and media-derived text are not privileged instructions without a separately verified Owner/Admin principal. C5 does not classify natural language, retrieve semantic history, call Hermes, dispatch domains, or generate/send replies.
 
 ## 11. Hermes and structured extraction boundary
 
@@ -267,7 +261,7 @@ Future sequence:
 | C2 | Identity, phone, platform, Person, and subject resolution | ambiguity, historical phone, isolation tests; disable resolver | shadow/read-only |
 | C3 | Ordered history and burst/turn aggregation | ordering, late continuation, reply-boundary tests; disable aggregation | shadow |
 | C4 | Topic state, closure, switching, repetition | lifecycle and contamination tests; disable topic writes | shadow |
-| C5 | Versioned Admin instruction service | precedence, expiry, supersession, reproducibility tests; disable instruction application | draft-only |
+| C5 | Versioned Admin/Owner instruction state and selection | trusted lifecycle, scoped deterministic selection, Owner-over-Admin same-subject conflict precedence, audit/evidence, expiry/supersession tests | implemented locally; no remote backup |
 | C6 | Bounded semantic retrieval/context composer | relevance, stale exclusion, sensitive-scope tests; revert to minimal context | draft-only |
 | C7 | Hermes/provider adapter and structured extraction | semantic corpus, timeout, confidence/evidence tests; disable provider | draft-only |
 | C8 | Domain dispatch contracts | authorization, schema, idempotency, failure tests; stop dispatch | no writes |
@@ -280,16 +274,20 @@ Future sequence:
 
 C3 is implemented as a deterministic, in-memory reconstruction over canonical C1 messages and C2 conversation linkage. Ordering and turn aggregation remain separate operations. Source/ingestion timestamps, provider ordering evidence, reply references, sender/thread boundaries, media references, and aggregation decisions remain available as structured evidence; C3 does not infer topic, intent, domain, or business meaning.
 
-No C3 turn table or migration is required. A turn is deterministically identified from its canonical conversation and ordered message IDs, so restart/reprocessing can reconstruct the same logical result. Late arrivals produce an auditable re-evaluation result rather than a duplicate downstream effect. C3 qualification is pure local code/test verification; no PostgreSQL qualification or production database change is applicable. C4 remains blocked pending explicit Owner approval.
+No C3 turn table or migration is required. A turn is deterministically identified from its canonical conversation and ordered message IDs, so restart/reprocessing can reconstruct the same logical result. Late arrivals produce an auditable re-evaluation result rather than a duplicate downstream effect. C3 qualification is pure local code/test verification; no PostgreSQL qualification or production database change is applicable. C4 is implemented as described below.
 
 ### C4 qualification decision
 
 C4 is implemented in `src/alrifai/conversations/topics.py` as a deterministic topic state machine over typed topic/transition proposals. It persists `conversation_topics` and immutable `conversation_topic_transitions` through V008 so state and history survive restart. Valid transitions, optimistic state versions, scoped idempotency, closure evidence, explicit reopening evidence, conversation scope, and C3 late-arrival conflicts are validated without semantic classification.
 
-C4 does not classify natural language, select Admin instructions, call Hermes, retrieve semantic history, generate replies, dispatch domain actions, or send outbound messages. C5 and later stages remain unimplemented and require separate Owner approval.
+C4 does not classify natural language, select Admin instructions, call Hermes, retrieve semantic history, generate replies, dispatch domain actions, or send outbound messages. C5 adds instruction state/selection only. C6 and later stages remain unimplemented and require separate Owner approval.
+
+### C5 implementation decision
+
+C5 is implemented in `src/alrifai/conversations/instructions.py`. V009 persists immutable instruction versions and append-only created/activated/revoked/superseded events, enforces canonical conversation/topic scope and links audit events to the trusted principal. PostgreSQL qualification covers V009 up/down/reapply and restart reconstruction. Owner precedence applies only to conflicting instructions on the same subject; it never cancels unrelated Admin guidance and never authorizes domain mutations. C6 remains unimplemented.
 
 No stage may begin automatically because the preserved C1 files exist. Each later stage remains blocked until the Owner explicitly approves it and the listed prerequisites are satisfied.
 
 ## 20. Definition of ready
 
-This specification remains the authority for staged implementation. C1, C2, C3, and C4 are implemented and locally qualified within their approved scopes; C5 and later stages remain pending explicit Owner approval.
+This specification remains the authority for staged implementation. C1–C4 are accepted baselines; C5 is implemented and locally qualified within its approved scope. C6 and later stages remain unimplemented and require explicit Owner approval.

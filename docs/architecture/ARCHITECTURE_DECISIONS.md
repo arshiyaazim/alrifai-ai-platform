@@ -24,6 +24,14 @@ The existence of a person record or caller-supplied actor ID is not authorizatio
 **Status:** Owner business requirement accepted; foundation implemented, authentication pending.
 The Owner is a distinct trusted principal type with high-assurance authentication and full platform capability semantics. Delegated user permissions cannot restrict the Owner. The Owner foundation is implemented in `src/alrifai/authorization/policy.py`; credential verification, principal persistence, bootstrap, frontend login, WhatsApp authentication, and MCP integration remain pending.
 
+### ADR-010 — Owner/Admin AI instruction conflict precedence
+
+**Status:** Accepted by explicit Owner decision; implemented for C5.
+
+Evaluate trusted issuer, central `MANAGE_CONVERSATIONS` authorization, lifecycle/effective window, expiry/revocation/supersession, and scope before precedence. Resolve applicable guidance per subject: an effective Owner instruction wins over a conflicting Admin instruction on that same subject only. Instructions on unrelated subjects remain applicable. Same-authority instructions use scope specificity, priority, effective time, and version ordering; unresolved equal-rank conflicts fail closed with selection evidence. This rule does not bypass central authorization, canonical business policy, or protected domain-service mutation rules. An external message claim cannot establish privileged issuer authority.
+
+Implemented in `src/alrifai/conversations/instructions.py`, persisted in V009. C5 does not implement semantic classification, Hermes, dispatch, or reply generation.
+
 ## Open decisions
 
 ### ADR-004 — AL-RIFAI authentication and authorization

@@ -1,5 +1,16 @@
 # AL-RIFAI Current State
 
+## Latest verified checkpoint — 2026-09-22
+
+Repository root `D:\apps\alrifai-ai-platform`; branch `feat/windows-local-dev`; current HEAD `5859bb178738346d6e5cb8ff41e6247495944b92` (accepted C1–C4 remote checkpoint). C5 changes below are uncommitted and have no remote backup. Four unrelated pre-existing modifications remain preserved: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, and `tests/integration/test_web_auth_postgres.py`.
+
+- C1–C4: accepted and qualified baseline, backed up at the SHA above.
+- C5: implemented locally in `src/alrifai/conversations/instructions.py`; V009 qualified up/down/reapply on a disposable local PostgreSQL 17 container; focused, integration, regression, and compile checks passed as recorded in `TEST_STATUS.md`.
+- Owner instruction rule: for conflicting applicable instructions on the same subject, effective Owner wins over Admin; unrelated subjects remain independently applicable. Neither bypasses central authorization, canonical business policy, or protected domain services.
+- Employee ID remains the designated normalized Bangladesh mobile (11 digits, starts with `0`); UUIDs, if present, are technical keys. C5 does not mutate Employee ID.
+- The frozen authentication baseline, canonical development Owner database, production data, and VPS are unchanged. The C5 disposable qualification container was used only for the recorded migration/integration checks and is removed after qualification.
+- C6 and all later stages: NOT STARTED; explicit Owner approval required. No C6 work is authorized by this checkpoint.
+
 **Repository:** `D:\apps\alrifai-ai-platform`
 **Branch:** `feat/windows-local-dev`
 **HEAD observed:** `7c1a9c1bc67c7c7263ca9d6d13a49f274778fc0d`

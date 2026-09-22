@@ -1,5 +1,19 @@
 # Test Status
 
+## Latest verified C5 run — 2026-09-22
+
+| Scope | Result | Notes |
+|---|---:|---|
+| C5 focused unit tests | PASSED — 12 | `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_conversation_instructions.py -q`; Owner conflict precedence, subject isolation, lifecycle/effective windows, authorization, same-authority conflict, topic closure, scope, idempotency, and prompt-injection boundary. |
+| V009 migration | PASSED | Up applied after V006/V007/V008 on new disposable PostgreSQL 17; tables/indexes/triggers verified; down preserved V008; reapply restored C5. |
+| C5/C2/C4 PostgreSQL integration | PASSED — 10 | C5 instruction persistence/reconstruction and DB constraints (2), plus identity resolver, conversation resolver, and topic integration regressions; all ran against the isolated loopback PostgreSQL 17 target. |
+| Conversation/identity/authorization regression | PASSED — 81 | C1 contracts, C2 resolution/normalization, C3 ordering/turns, C4 topics, C5 units, central authorization. |
+| Full repository suite | PASSED — 82 passed, 19 skipped | No integration database URL was set for this run; the 19 environment-dependent DB tests were skipped, not counted as passed. |
+| Conversations package compile | PASSED | `compileall -q src/alrifai/conversations`. |
+| V007/V008 prior qualification | PASSED — baseline evidence | C2 V007 and C4 V008 up/down/reapply and prior PostgreSQL integration results remain documented above; C5 did not alter those migrations. |
+| `git diff --check` | PASSED | Final worktree check completed after C5 and continuity edits; only Git line-ending normalization warnings appeared. |
+| Tracked and untracked diff secret scan | PASSED | Scanned tracked HEAD diff and all five untracked C5 files for private-key headers, AWS keys, common API-token patterns, and credential-bearing database URLs; no matches. |
+
 ## Latest recorded runs
 
 2026-09-21 Owner-login completion (HEAD `7c1a9c1bc67c7c7263ca9d6d13a49f274778fc0d`, uncommitted work preserved):

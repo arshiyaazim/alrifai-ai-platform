@@ -1,5 +1,13 @@
 # Current Blockers and Required Decisions
 
+## Current Conversations & AI checkpoint — 2026-09-22
+
+- C5 technical blockers: NONE. Versioned instruction state, deterministic selection, Owner/Admin precedence, scope/privacy safeguards, and V009 PostgreSQL qualification are complete locally.
+- C6 is not a technical blocker to C5; it is a hard authorization gate: NOT STARTED — OWNER APPROVAL REQUIRED.
+- Existing platform/authentication/domain prerequisites listed below remain recorded platform work and must not be inferred as resolved by C5.
+- No Owner decision remains open for C5 precedence. Owner wins only over conflicting Admin guidance on the same subject; unrelated subject guidance is unaffected.
+- Production/VPS and the canonical development Owner database were not changed. C5 database qualification used a disposable loopback PostgreSQL 17 container only.
+
 | Blocker | Impact | Required action | Owner approval |
 |---|---|---|---|
 | Trusted Admin authorization absent | Hiring must fail closed; authorized hiring cannot be verified | Approve credential/bootstrap, principal persistence, and trusted actor adapter design | Required |

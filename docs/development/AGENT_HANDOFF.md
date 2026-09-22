@@ -1,5 +1,28 @@
 # Agent Handoff
 
+## Latest handoff — 2026-09-22 (C5 checkpoint)
+
+1. **Project/branch:** `D:\apps\alrifai-ai-platform`, `feat/windows-local-dev`; HEAD `5859bb178738346d6e5cb8ff41e6247495944b92`.
+2. **Checkpoint:** C1–C4 accepted and GitHub-backed at that exact SHA. C5 is complete locally but uncommitted/unpushed; it has no remote backup. Do not commit/push without new Owner authorization.
+3. **Stage status:** C1, C2, C3, C4 are accepted baselines; C5 instruction versioning/selection and V009 are locally qualified. C6 is NOT STARTED — OWNER APPROVAL REQUIRED.
+4. **Read first:** `AGENTS.md`; this handoff and `CHECKPOINT_MANIFEST.md`; `CURRENT_STATE.md`, `ACTIVE_TASK.md`, `BLOCKERS.md`, `TEST_STATUS.md`; `MCP-Servers/conversations-ai/FINAL_IMPLEMENTATION_SPEC.md`; `MCP-Servers/CROSS_SERVER_CONTRACTS.md`; `docs/architecture/MASTER_ARCHITECTURE.md`, `ARCHITECTURE_DECISIONS.md`; identity/data ownership documents.
+5. **C5 files:** `src/alrifai/conversations/instructions.py`; export in `src/alrifai/conversations/__init__.py`; `database/migrations/V009__conversation_ai_instructions.sql` and `_down.sql`; `tests/test_conversation_instructions.py`; `tests/integration/test_conversation_instructions_postgres.py`; canonical specification, ADR, migration index, data dictionary, and continuity updates. All appear in the manifest.
+6. **Migration state:** V009 up/down/reapply passed on disposable local PostgreSQL 17 after V006–V008. Only that disposable container/database was changed; it was removed. Preserved `alrifai-postgres` and `alrifai-identity-verify-02c`, canonical development Owner DB, production DB, and VPS were untouched.
+7. **Tests:** C5 unit 12 passed; PostgreSQL integration subset 10 passed; conversation/identity/auth regression 81 passed; full suite 82 passed, 19 skipped because the full-suite run intentionally had no DB URL; Conversations compile passed. See `TEST_STATUS.md` for commands and prior V007/V008 qualification.
+8. **Employee-ID rule:** authoritative business Employee ID is the designated normalized Bangladesh mobile, 11 digits beginning `0`. Any UUID is technical only. No C5 Employee-ID mutation.
+9. **Owner/Admin precedence:** after applicability filtering, conflicting Owner instruction beats Admin only on the same subject; unrelated Admin subjects remain. Same-authority unresolved equal-rank conflict fails closed. Neither instruction bypasses canonical policy, central authorization, or protected domain services.
+10. **Topic boundary:** C5 topic scope references C4; closed/completed topic guidance is excluded and does not reopen the topic.
+11. **Authentication:** frozen baseline unchanged; central `TrustedPrincipal` and `MANAGE_CONVERSATIONS` are used. No auth redesign.
+12. **Production boundary:** no VPS/production DB/service, channel, Hermes, Open WebUI, Nginx/Tailscale, 9Router/Ollama, or authentication changes.
+13. **Git boundary:** no C5 commit/push/merge/PR. Preserve four pre-existing unrelated local edits: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, `tests/integration/test_web_auth_postgres.py`.
+14. **Next authorized action:** NONE after this checkpoint; stop development.
+15. **Proposed next task:** C6 — Bounded Semantic Context Retrieval; requires explicit Owner approval.
+16. **Exact next-session first steps:** verify branch/HEAD/status; read this handoff and manifest; reconcile working tree against the list; read C5 spec/ADR and inspect C5 modules/tests read-only; do not start C6 until separately approved.
+
+## C5 roadmap (plans only; not implementation authorization)
+
+C6 — Bounded Semantic Context Retrieval; C7 — Hermes Interpretation and Extraction; C8 — Canonical Domain Dispatch; C9 — Contextual Replies and Outbound; C10 — Audit and Recovery; C11 — Semantic Regression Corpus; C12 — Controlled Activation. All are NOT STARTED and require separate Owner approval.
+
 **Date:** 2026-09-21
 **Repository:** `D:\apps\alrifai-ai-platform`
 **Branch:** `feat/windows-local-dev`

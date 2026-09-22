@@ -1,5 +1,40 @@
 # AL-RIFAI C4 Development Checkpoint Manifest
 
+## Latest checkpoint — C5 (2026-09-22)
+
+- Repository root: `D:\apps\alrifai-ai-platform`
+- Branch: `feat/windows-local-dev`
+- Current HEAD: `5859bb178738346d6e5cb8ff41e6247495944b92`
+- Remote branch: `origin/feat/windows-local-dev`; independently recorded C1–C4 checkpoint SHA matches this baseline. C1–C4 remote backup: VERIFIED. C5 remote backup: NO.
+- Current worktree: uncommitted changes present; no commit/push in C5; no files deleted.
+- Timestamp/timezone: 2026-09-22 08:46:19 +06:00 (Asia/Dhaka, UTC+06:00).
+- Remote backup scope: C1–C4 checkpoint only. C5 work is local-only.
+- Secrets: no credentials saved in C5 files or continuity records.
+- Database/VPS: C5 V009 was applied, rolled back, and reapplied only on disposable local PostgreSQL 17 `alrifai-c5-qualification-20260922`, bound to loopback; disposable container removed after qualification. Production, VPS, and preserved local databases were not modified.
+
+### Added/untracked C5 implementation and verification files
+
+- `database/migrations/V009__conversation_ai_instructions.sql`
+- `database/migrations/V009__conversation_ai_instructions_down.sql`
+- `src/alrifai/conversations/instructions.py`
+- `tests/test_conversation_instructions.py`
+- `tests/integration/test_conversation_instructions_postgres.py`
+
+### Modified files in the current worktree
+
+- C5 implementation/docs: `src/alrifai/conversations/__init__.py`; `MCP-Servers/conversations-ai/FINAL_IMPLEMENTATION_SPEC.md`; `database/migrations/VERSIONS.md`; `docs/architecture/ARCHITECTURE_DECISIONS.md`; `docs/data-dictionary/DATA_DICTIONARY.md`; and this checkpoint plus `CURRENT_STATE.md`, `ACTIVE_TASK.md`, `BLOCKERS.md`, `TEST_STATUS.md`, `AGENT_HANDOFF.md`.
+- Pre-existing unrelated owner changes preserved and not incorporated into C5: `docker-compose.yml`; `scripts/start-alrifai-web.ps1`; `src/alrifai/web/app.py`; `tests/integration/test_web_auth_postgres.py`.
+- Deleted files: NONE.
+
+### C5 verification and next action
+
+- C5 unit tests: 12 passed; C5/C2/C4 PostgreSQL integration subset: 10 passed; conversation/identity/auth focused regression: 81 passed; full repository suite: 82 passed, 19 skipped (database environment absent for that run); compile: passed.
+- V009 up/down/reapply: PASS on the disposable local PostgreSQL target.
+- Final verification: `git diff --check` PASSED; tracked HEAD diff plus all five untracked C5 files secret scan PASSED; continuity readback completed; all changes are accounted for below. `git status --short --branch` showed the five C5 untracked files, the C5 tracked files, and exactly the four pre-existing unrelated modifications listed above. No deleted files.
+- Remote backup verification: C1–C4 baseline SHA `5859bb178738346d6e5cb8ff41e6247495944b92` was independently verified before this task. A fresh remote read could not be performed during final verification because the configured GitHub SSH connection returned `Permission denied (publickey)`; this does not change the previously verified baseline record. C5 remains local-only.
+- C1–C4 accepted/remote-backed baseline SHA: `5859bb178738346d6e5cb8ff41e6247495944b92`.
+- C5 commit/push: NONE. C6: NOT STARTED — OWNER APPROVAL REQUIRED. No development action is authorized after this checkpoint.
+
 **Checkpoint timestamp:** 2026-09-22 03:22:56 +06:00 (Asia/Dhaka)
 **Repository root:** `D:\apps\alrifai-ai-platform`
 **Branch:** `feat/windows-local-dev`

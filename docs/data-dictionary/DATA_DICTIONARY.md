@@ -5,6 +5,15 @@
 
 Each field has a single, unambiguous meaning across the entire platform.
 
+## C5 conversation instruction persistence
+
+| Table | Purpose | Ownership |
+|---|---|---|
+| `conversation_ai_instruction_versions` | Immutable Owner/Admin instruction content, subject, version, issuer, applicability scope, priority, effective/expiry times, supersession, correlation, idempotency, and provenance. Typed conversation/topic scope references preserve C2/C4 boundaries. | Conversations & AI C5; V009 |
+| `conversation_ai_instruction_events` | Append-only create/activate/revoke/supersede lifecycle evidence, trusted acting principal, timestamps, idempotency, correlation, and reason. | Conversations & AI C5; V009 |
+
+Lifecycle writes also use the existing canonical `audit_log`; these tables are not an authorization or domain-policy store. Owner precedence applies only to conflicting instructions on the same subject.
+
 ---
 
 ## Naming Convention Rules

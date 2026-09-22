@@ -55,6 +55,12 @@ from .topics import (
     TopicTransitionKind,
     TopicTransitionRequest,
 )
+from .instructions import (
+    InMemoryInstructionStore, InstructionConflictError, InstructionContext,
+    InstructionDraft, InstructionError, InstructionEvent, InstructionEventType,
+    InstructionScope, InstructionSelection, InstructionService, InstructionStatus,
+    InstructionVersion, PostgresInstructionStore, SelectionEvidence,
+)
 
 __all__ = [
     "ActorType",

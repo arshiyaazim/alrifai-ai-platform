@@ -24,3 +24,8 @@ development database; it does not activate channels or Hermes.
 `V008__conversation_topics.sql` adds restart-safe C4 topic state and immutable
 topic transition history. It is approved only for isolated local qualification;
 it does not implement semantic classification, Hermes, or outbound behavior.
+
+`V009__conversation_ai_instructions.sql` adds immutable, versioned C5 Owner/Admin
+instruction records and append-only lifecycle evidence with canonical audit
+attribution. It references V007 conversations and V008 topics and enforces
+topic-to-conversation scope. Approved only for isolated local qualification.
