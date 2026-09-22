@@ -19,6 +19,7 @@ from src.alrifai.employee.employee_service import (  # noqa: E402
     EmployeeService,
 )
 from src.alrifai.identity.identity_resolver import IdentityObservation  # noqa: E402
+from src.alrifai.identity.phone_normalizer import normalize_phone  # noqa: E402
 
 
 pytestmark = pytest.mark.skipif(
@@ -50,7 +51,7 @@ def _person_with_phone(connection, phone: str) -> UUID:
         VALUES ('APPLICANT', %s)
         RETURNING person_id
         """,
-        (phone,),
+        (normalize_phone(phone),),
     )[0]
     _one(
         connection,
@@ -59,7 +60,7 @@ def _person_with_phone(connection, phone: str) -> UUID:
         VALUES (%s, %s, %s, 'service-integration-test')
         RETURNING phone_id
         """,
-        (person_id, phone, phone),
+        (person_id, phone, normalize_phone(phone)),
     )
     return person_id
 

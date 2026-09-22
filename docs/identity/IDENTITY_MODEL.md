@@ -22,6 +22,8 @@ The previous system experienced recurring identity problems:
 
 ## Canonical Identity Tables
 
+Owner Employee-ID correction: `person_id` remains the immutable internal Person identity, but the authoritative business Employee ID is the designated normalized Bangladeshi mobile. It is not a PostgreSQL primary key. The canonical comparison value is the final 11 digits beginning with `0`; `+`, `00`, `88`, and local representations normalize to that value. Contact/messaging numbers may differ, previous Employee IDs remain historical aliases after an authorized edit, and an inbound message never edits Employee ID.
+
 ### `persons` (Core entity)
 Immutable internal primary key via UUID (`person_id`). Human-readable attributes are stored but never used as identity.
 
@@ -47,7 +49,7 @@ Immutable internal primary key via UUID (`person_id`). Human-readable attributes
 | `verified` | BOOLEAN | Verification status |
 | `created_at` | TIMESTAMPTZ | |
 
-### `person_phones` (Contact methods, NOT identity)
+### `person_phones` (Contact methods; Employee ID is a separate designated business identifier)
 | Field | Type | Description |
 |---|---|---|
 | `phone_id` | UUID | PK |
@@ -140,7 +142,7 @@ person    queue    person    queue
 
 ## Phone Number Normalization
 
-One canonical library/service for all modules. Bangladeshi format (`+880XXXXXXXXX`) normalized consistently. Raw observed values preserved alongside normalized values.
+One canonical library/service for all modules. Bangladeshi `+`, `00`, `88`, and local forms normalize consistently to the final 11 digits beginning with `0`. Raw observed values are preserved alongside normalized values.
 
 **Provenance:** Fazle-Core `phone_normalizer` module  
 **Implementation Location:** `domain/identity/phone_normalizer.py`  
@@ -150,10 +152,12 @@ One canonical library/service for all modules. Bangladeshi format (`+880XXXXXXXX
 
 ## Identity Resolution Rules
 
+For Person resolution, phone is not a Person primary key. For Employee business workflows, the designated normalized mobile is the authoritative Employee ID; only the authorized Employee-ID edit workflow may change it. Internal UUID keys remain technical implementation details.
+
 | Rule ID | Rule | Source |
 |---|---|---|
-| `IDENTITY-001` | A person is identified by immutable UUID, never by name or phone | Fazle-Core identity_brain |
-| `IDENTITY-002` | Phone numbers are contact methods, never the primary key | Fazle-Core number_identity |
+| `IDENTITY-001` | A Person is identified internally by immutable UUID; Employee business identity is separately the designated normalized Bangladesh mobile | AL-RIFAI owner policy; Fazle-Core identity_brain |
+| `IDENTITY-002` | Phone numbers are never the Person database primary key; the designated Employee mobile is authoritative only as the Employee business ID | AL-RIFAI owner policy; Fazle-Core number_identity |
 | `IDENTITY-003` | Payout numbers are financial routing, never person identity | Fazle-Core payroll |
 | `IDENTITY-004` | External platform IDs (WhatsApp/Facebook) must be explicitly typed | Fazle-Core contact_roles |
 | `IDENTITY-005` | Name variations are aliases, never the identity | Fazle-Core group_identity |

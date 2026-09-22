@@ -1,78 +1,132 @@
-# Task 03B Checkpoint Commit Manifest
+# AL-RIFAI C4 Development Checkpoint Manifest
 
-**Status:** Proposed only; nothing staged or committed.
-**Base HEAD:** `e8b67e0e1af844a4970755858c5a3a253e874d3d`
+**Checkpoint timestamp:** 2026-09-22 03:22:56 +06:00 (Asia/Dhaka)
+**Repository root:** `D:\apps\alrifai-ai-platform`
 **Branch:** `feat/windows-local-dev`
+**HEAD:** `7c1a9c1bc67c7c7263ca9d6d13a49f274778fc0d`
+**Remote tracking:** `origin/feat/windows-local-dev`; local branch ahead by 3 pre-existing commits
+**Commit state:** uncommitted changes present; no commit created
+**Push state:** no push performed
+**Remote backup verification:** NO — no backup or push was performed in this session
 
-This manifest classifies the current dirty worktree. It is intentionally explicit; do not use `git add -A`.
+## Checkpoint result
 
-## 1. Architecture and continuity
+- C1: implemented and qualified.
+- C2: implemented and qualified; V007 up/down/reapply passed previously with 11 PostgreSQL integration tests.
+- C3: implemented and qualified; no migration required.
+- C4: implemented and qualified; V008 up/down/reapply passed and PostgreSQL persistence/reconstruction integration passed.
+- C5: NOT STARTED — OWNER APPROVAL REQUIRED.
+- C4-specific blockers: NONE.
+- Production/VPS database changed: NO.
+- Preserved containers `alrifai-postgres` and `alrifai-identity-verify-02c`: untouched.
+- Disposable C4 container `alrifai-c4-qualification-20260922`: removed after qualification.
 
-Proposed inclusion:
+## Tests and validation
 
-- `AGENTS.md`
-- `README.md`
-- `docs/ARCHITECTURE.md`
-- `docs/IMPLEMENTATION_STATUS.md`
-- `docs/SESSION_HANDOFF.md`
-- `docs/architecture/MASTER_ARCHITECTURE.md`
+- C4 focused: 10 passed.
+- C4 PostgreSQL integration: 2 passed before V008 reapply; 2 passed after reapply.
+- Full available repository suite: 70 passed, 17 skipped environment-dependent integration tests.
+- Package/import compilation: PASS.
+- `git diff --check`: PASS.
+- Tracked-diff secret scan: PASS; zero hits.
+- No production PostgreSQL or VPS qualification was attempted.
+
+## Migration files
+
+- `database/migrations/V007__conversations_identity.sql` — pre-existing C2 untracked implementation file.
+- `database/migrations/V007__conversations_identity_down.sql` — pre-existing C2 rollback file.
+- `database/migrations/V008__conversation_topics.sql` — C4 added migration.
+- `database/migrations/V008__conversation_topics_down.sql` — C4 added rollback migration.
+
+## C4 implementation/test files
+
+- `src/alrifai/conversations/topics.py`
+- `src/alrifai/conversations/__init__.py`
+- `tests/test_conversation_topics.py`
+- `tests/integration/test_conversation_topics_postgres.py`
+
+## Modified tracked files
+
+- `database/migrations/VERSIONS.md`
+- `docker-compose.yml`
 - `docs/architecture/ARCHITECTURE_DECISIONS.md`
-- `docs/architecture/ADR-003B-AUTHORIZATION.md`
-- `src/alrifai/authorization/__init__.py`
-- `src/alrifai/authorization/policy.py`
-- `tests/test_authorization_policy.py`
-- `docs/architecture/LEGACY_GAP_REGISTER.md`
+- `docs/data-dictionary/DATA_DICTIONARY.md`
 - `docs/development/ACTIVE_TASK.md`
 - `docs/development/AGENT_HANDOFF.md`
 - `docs/development/BLOCKERS.md`
 - `docs/development/CURRENT_STATE.md`
-- `docs/development/CHECKPOINT_MANIFEST.md`
 - `docs/development/TEST_STATUS.md`
-
-## 2. Task 01 — phone normalization
-
-- `src/alrifai/__init__.py` — package scaffolding; shared with later tasks.
-- `src/alrifai/identity/__init__.py` — identity package export.
+- `docs/identity/IDENTITY_MODEL.md`
+- `scripts/start-alrifai-web.ps1`
+- `src/alrifai/identity/__init__.py`
+- `src/alrifai/identity/identity_resolver.py`
 - `src/alrifai/identity/phone_normalizer.py`
+- `src/alrifai/web/app.py`
+- `tests/integration/test_core_services_postgres.py`
+- `tests/integration/test_identity_resolver_postgres.py`
+- `tests/integration/test_web_auth_postgres.py`
+- `tests/test_identity_resolver.py`
 - `tests/test_phone_normalizer.py`
 
-## 3. Task 02 — identity resolution and PostgreSQL
+## All untracked files accounted for
 
-- `src/alrifai/identity/identity_resolver.py`
-- `tests/test_identity_resolution.py`
-- `tests/test_identity_resolver.py`
-- `tests/integration/test_identity_resolver_postgres.py`
-- `requirements.txt`
+### Architecture/documentation
 
-## 4. Task 03A — applicant, employee, and security correction
+- `MCP-Servers/ARCHITECTURE.md`
+- `MCP-Servers/CROSS_SERVER_CONTRACTS.md`
+- `MCP-Servers/DATA_OWNERSHIP_MATRIX.md`
+- `MCP-Servers/DOMAIN_OWNERSHIP.md`
+- `MCP-Servers/FAZLE_CORE_AUDIT.md`
+- `MCP-Servers/IMPLEMENTATION_SEQUENCE.md`
+- `MCP-Servers/README.md`
+- `MCP-Servers/WORKFLOW_CONVERGENCE.md`
+- `MCP-Servers/conversations-ai/FINAL_IMPLEMENTATION_SPEC.md`
+- `MCP-Servers/conversations-ai/LEGACY_MAPPING.md`
+- `MCP-Servers/conversations-ai/README.md`
+- `MCP-Servers/conversations-ai/TOOLS_AND_RESOURCES.md`
+- `MCP-Servers/conversations-ai/WORKFLOWS.md`
+- `MCP-Servers/finance-payroll/LEGACY_MAPPING.md`
+- `MCP-Servers/finance-payroll/README.md`
+- `MCP-Servers/finance-payroll/TOOLS_AND_RESOURCES.md`
+- `MCP-Servers/finance-payroll/WORKFLOWS.md`
+- `MCP-Servers/operations-clients/LEGACY_MAPPING.md`
+- `MCP-Servers/operations-clients/README.md`
+- `MCP-Servers/operations-clients/TOOLS_AND_RESOURCES.md`
+- `MCP-Servers/operations-clients/WORKFLOWS.md`
+- `MCP-Servers/platform-admin/LEGACY_MAPPING.md`
+- `MCP-Servers/platform-admin/README.md`
+- `MCP-Servers/platform-admin/TOOLS_AND_RESOURCES.md`
+- `MCP-Servers/platform-admin/WORKFLOWS.md`
+- `MCP-Servers/recruitment/FINAL_IMPLEMENTATION_SPEC.md`
+- `MCP-Servers/recruitment/LEGACY_MAPPING.md`
+- `MCP-Servers/recruitment/README.md`
+- `MCP-Servers/recruitment/TOOLS_AND_RESOURCES.md`
+- `MCP-Servers/recruitment/WORKFLOWS.md`
+- `MCP-Servers/workforce/LEGACY_MAPPING.md`
+- `MCP-Servers/workforce/README.md`
+- `MCP-Servers/workforce/TOOLS_AND_RESOURCES.md`
+- `MCP-Servers/workforce/WORKFLOWS.md`
 
-- `src/alrifai/applicant/__init__.py`
-- `src/alrifai/applicant/applicant_service.py`
-- `src/alrifai/employee/__init__.py`
-- `src/alrifai/employee/employee_service.py`
-- `src/alrifai/services/__init__.py`
-- `src/alrifai/services/_common.py`
-- `tests/test_employee_service_security.py`
-- `tests/integration/test_core_services_postgres.py`
+### Runtime, migrations, and tests
 
-## 5. Windows local development
+- `docs/development/CHECKPOINT_MANIFEST.md`
+- `src/alrifai/conversations/__init__.py`
+- `src/alrifai/conversations/models.py`
+- `src/alrifai/conversations/ordering.py`
+- `src/alrifai/conversations/resolution.py`
+- `src/alrifai/conversations/topics.py`
+- `src/alrifai/conversations/turns.py`
+- `tests/test_conversation_c3.py`
+- `tests/test_conversation_models.py`
+- `tests/test_conversation_resolution.py`
+- `tests/test_conversation_topics.py`
+- `tests/integration/test_conversation_resolution_postgres.py`
+- `tests/integration/test_conversation_topics_postgres.py`
 
-- `.gitignore`
-- `docker-compose.yml`
-- `docs/development/LOCAL_WINDOWS_SETUP.md`
+## Deleted files
 
-## 6. Copilot and 9Router local work
+NONE.
 
-- `docs/development/9ROUTER_LOCAL_SETUP_REPORT.md`
-- `docs/development/COPILOT_MULTI_PROVIDER.md`
-- `scripts/copilot-providers.json`
-- `scripts/select-copilot-provider.ps1`
-- `scripts/start-9router-tunnel.ps1`
+## Next-session instruction
 
-## 7. Mixed or unclassified
-
-No source file currently contains visibly mixed hunks that require hunk-level staging. The package initializers are shared scaffolding and should be reviewed with the implementation files. The historical reports may contain stale verification claims; preserve them as evidence and rely on current-state documents for status.
-
-## Proposed commit boundary
-
-The safest checkpoint is a reviewed multi-scope snapshot with the explicit files above, preferably split into logical commits for architecture, implementation, Windows development, and Copilot/9Router work. If one checkpoint commit is required, stage only this manifest's file list after owner approval. Do not include `.env`, local data, caches, credentials, or generated `__pycache__` files.
+No development action is authorized during the Owner break. The next proposed task is C5 — Versioned Admin/Owner AI Instructions and Selection, but it is **NOT STARTED — OWNER APPROVAL REQUIRED**. Read this manifest and the continuity files first; do not infer approval from this checkpoint.

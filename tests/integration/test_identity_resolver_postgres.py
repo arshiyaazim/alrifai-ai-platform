@@ -17,6 +17,7 @@ from src.alrifai.identity.identity_resolver import (  # noqa: E402
     resolve_and_reactivate,
     resolve_identity,
 )
+from src.alrifai.identity.phone_normalizer import normalize_phone  # noqa: E402
 
 
 pytestmark = pytest.mark.skipif(
@@ -40,7 +41,7 @@ def _create_person(connection, phone: str | None = None) -> UUID:
             VALUES ('EMPLOYEE', %s)
             RETURNING person_id
             """,
-            (phone,),
+            (normalize_phone(phone),),
         )
         return cursor.fetchone()[0]
 
@@ -72,7 +73,7 @@ def _add_phone(connection, person_id: UUID, normalized_phone: str) -> None:
             )
             VALUES (%s, %s, %s, 'MOBILE', 'integration-test')
             """,
-            (person_id, normalized_phone, normalized_phone),
+            (person_id, normalized_phone, normalize_phone(normalized_phone)),
         )
 
 

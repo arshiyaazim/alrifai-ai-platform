@@ -30,6 +30,7 @@ class IdentityObservation:
     employee_code: str | None = None
     stable_identifiers: tuple[StableIdentifier, ...] = ()
     platform: str | None = None
+    platform_account: str | None = None
     platform_user_id: str | None = None
 
 
@@ -70,7 +71,7 @@ class IdentityRepository(Protocol):
 
     def find_by_identifier(self, identifier_type: str, value: str) -> Sequence[IdentityCandidate]: ...
 
-    def find_by_platform_id(self, platform: str, platform_user_id: str) -> Sequence[IdentityCandidate]: ...
+    def find_by_platform_id(self, platform: str, platform_user_id: str, source_account: str | None = None) -> Sequence[IdentityCandidate]: ...
 
 
 class ReactivationRepository(IdentityRepository, Protocol):
@@ -127,6 +128,8 @@ def resolve_identity(
 
     if (observation.platform is None) != (observation.platform_user_id is None):
         return IdentityResolution(status="invalid", reason="platform identifier is incomplete")
+    if observation.platform_account is not None and observation.platform is None:
+        return IdentityResolution(status="invalid", reason="platform account is incomplete")
 
     evidence_sets: list[tuple[str, tuple[IdentityCandidate, ...]]] = []
     if normalized_phone is not None:
@@ -155,6 +158,7 @@ def resolve_identity(
                     repository.find_by_platform_id(
                         observation.platform,
                         observation.platform_user_id,
+                        observation.platform_account or "default",
                     )
                 ),
             )
@@ -303,14 +307,17 @@ class PostgresIdentityRepository:
         self,
         platform: str,
         platform_user_id: str,
+        source_account: str | None = None,
     ) -> Sequence[IdentityCandidate]:
         return self._fetch(
             self._candidate_select
-            + """
+                + """
         JOIN external_platform_ids AS epi ON epi.person_id = p.person_id
-        WHERE epi.platform = %s AND epi.platform_user_id = %s
+        WHERE epi.platform = %s
+          AND epi.platform_user_id = %s
+          AND epi.source_account = %s
         """,
-            (platform, platform_user_id),
+            (platform, platform_user_id, source_account or "default"),
         )
 
     def lock_employee(self, employee_id: UUID) -> IdentityCandidate | None:
@@ -383,7 +390,7 @@ class PostgresIdentityRepository:
 
 
 def _is_supported_normalized_phone(value: str) -> bool:
-    return len(value) == 14 and value.startswith("+880") and value[1:].isdigit()
+    return len(value) == 11 and value.startswith("0") and value.isdigit()
 
 
 def _candidate_from_row(row: Sequence[object]) -> IdentityCandidate:

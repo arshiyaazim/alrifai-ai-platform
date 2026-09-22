@@ -12,7 +12,7 @@ Use one independently maintainable AL-RIFAI platform with clear adapters, orches
 ### ADR-002 — Canonical person identity
 
 **Status:** Implemented locally, further hardening open.
-`persons.person_id` is canonical. Names are attributes, phone numbers are contact identifiers, payout numbers are never identity keys, and ambiguous matches require review.
+`persons.person_id` is canonical for internal Person identity. Names are attributes, phone numbers are contact identifiers for Person resolution, and payout numbers are never identity keys. Owner policy separately makes the designated normalized Bangladeshi mobile the authoritative business Employee ID; ambiguous matches require review and internal UUID employee-record keys remain technical only.
 
 ### ADR-003 — Privileged operations fail closed
 

@@ -10,6 +10,7 @@ from .identity_resolver import (
     resolve_and_reactivate,
     resolve_identity,
 )
+from .phone_normalizer import normalize_phone
 
 __all__ = [
     "IdentityCandidate",
@@ -20,4 +21,5 @@ __all__ = [
     "StableIdentifier",
     "resolve_and_reactivate",
     "resolve_identity",
+    "normalize_phone",
 ]

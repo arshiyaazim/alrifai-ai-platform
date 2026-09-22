@@ -59,7 +59,7 @@ class FakeRepository:
     def find_by_identifier(self, identifier_type: str, value: str):
         return self.identifiers.get((identifier_type, value), ())
 
-    def find_by_platform_id(self, platform: str, platform_user_id: str):
+    def find_by_platform_id(self, platform: str, platform_user_id: str, source_account=None):
         return self.platforms.get((platform, platform_user_id), ())
 
     def lock_employee(self, employee_id: UUID):
@@ -100,17 +100,17 @@ def test_unique_typed_platform_id_match():
 
 def test_unique_normalized_phone_match():
     repo = FakeRepository()
-    repo.phones["+8801712345678"] = (candidate(),)
+    repo.phones["01712345678"] = (candidate(),)
 
     result = resolve_identity(repo, IdentityObservation(phone="017-1234-5678"))
 
     assert result.status == "matched"
-    assert result.normalized_phone == "+8801712345678"
+    assert result.normalized_phone == "01712345678"
 
 
 def test_shared_phone_is_ambiguous():
     repo = FakeRepository()
-    repo.phones["+8801712345678"] = (candidate(), candidate(PERSON_B, None, None))
+    repo.phones["01712345678"] = (candidate(), candidate(PERSON_B, None, None))
 
     result = resolve_identity(repo, IdentityObservation(phone="01712345678"))
 
@@ -162,7 +162,7 @@ def test_missing_phone_does_not_invalidate_stable_identifier():
 
 def test_inactive_employee_is_activated_and_audited():
     repo = FakeRepository()
-    repo.phones["+8801712345678"] = (candidate(),)
+    repo.phones["01712345678"] = (candidate(),)
     repo.locked = candidate()
 
     result = resolve_and_reactivate(
@@ -180,7 +180,7 @@ def test_inactive_employee_is_activated_and_audited():
 
 def test_already_active_employee_is_not_updated_or_audited():
     repo = FakeRepository()
-    repo.phones["+8801712345678"] = (candidate(status="active"),)
+    repo.phones["01712345678"] = (candidate(status="active"),)
     repo.locked = candidate(status="active")
 
     result = resolve_and_reactivate(repo, IdentityObservation(phone="01712345678"))
@@ -210,7 +210,7 @@ def test_non_match_does_not_activate(observation, status):
 
 def test_ambiguous_match_does_not_activate():
     repo = FakeRepository()
-    repo.phones["+8801712345678"] = (candidate(), candidate(PERSON_B, None, None))
+    repo.phones["01712345678"] = (candidate(), candidate(PERSON_B, None, None))
 
     result = resolve_and_reactivate(repo, IdentityObservation(phone="01712345678"))
 
@@ -221,7 +221,7 @@ def test_ambiguous_match_does_not_activate():
 
 def test_reactivation_is_idempotent_after_employee_becomes_active():
     repo = FakeRepository()
-    repo.phones["+8801712345678"] = (candidate(),)
+    repo.phones["01712345678"] = (candidate(),)
     repo.locked = candidate()
     first = resolve_and_reactivate(repo, IdentityObservation(phone="01712345678"))
 
@@ -236,7 +236,7 @@ def test_reactivation_is_idempotent_after_employee_becomes_active():
 
 def test_audit_failure_rolls_back_activation():
     repo = FakeRepository()
-    repo.phones["+8801712345678"] = (candidate(),)
+    repo.phones["01712345678"] = (candidate(),)
     repo.locked = candidate()
     repo.fail_audit = True
 
