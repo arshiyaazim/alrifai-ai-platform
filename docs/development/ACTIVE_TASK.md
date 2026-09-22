@@ -1,5 +1,29 @@
 # Active Development Task
 
+## Live C7 qualification completed — owner checkpoint pending (2026-09-22)
+
+Status: PARTIAL pending owner review, not blocked on 9Router. Host-capable execution confirmed the existing `9router` container and HTTP 200 health. The canonical server-side `.env` loader authenticated `nine-general/general` successfully without exposing the credential. Section 24 completed with PASS/SAFE_ABSTAIN outcomes recorded in `CURRENT_STATE.md`; Section 25 live auth-failure and offline failure-matrix checks are recorded there.
+
+Focused C7/AI-runtime tests: 67 passed. Selected C1–C7 regression: 70 passed; confirmed relationship subset: 2 passed. Full non-integration regression: 162 passed / 12 unchanged fixed-clock C5/C6 failures. No C5 lifecycle changes, restart, Docker change, migration application, outbound message, C8, C9, commit, or push.
+
+Next action: owner review of the uncommitted checkpoint. Do not commit or push until explicitly approved.
+
+## Recovery handoff — 2026-09-22 (VPS)
+
+Status: PARTIAL / BLOCKED at live qualification. The worktree is preserved on `feat/windows-local-dev` HEAD `9b5ffcc`; no commit or push was made. Proven C5 timestamp drift was reverted only in `instructions.py`; intended C7 and AI-runtime/settings work remains. `scripts/dev-start.sh` loads the ignored repository `.env` server-side without echoing or exposing values.
+
+Offline gates: focused C7/runtime/settings 67 passed; selected C1–C7 regression 70 passed; confirmed-current-employee fixture 2 passed; compile, diff, migration static checks, and secret scan passed. Full non-integration regression is 162 passed / 12 known fixed-clock C5/C6 failures.
+
+Live Section 24/25 cannot proceed because `127.0.0.1:20129` has no listener. Do not start or reconfigure `/home/azim/9router` without separate owner authorization. The next action is owner review of this checkpoint and, if authorized, bringing up the already-approved development gateway before rerunning live qualification.
+
+## Live C7 qualification in progress — credential gate cleared (2026-09-22)
+
+Status: authenticated transport PASS; C7 live `interpreted` on sec-24 core suite; prompt-contract fix applied (uncommitted) with offline 66 passed. Next: sec-24 remainder (multi-turn, anaphora, NID, employee-claim, CONFIRMED fixture) + sec-25 live spot-checks + full regression, then owner-authorized checkpoint only if all gates pass. C8/C9 NOT STARTED. No restart performed (no AL-RIFAI web process on VPS); no production/legacy change.
+
+## OPENCODE_C7_TASK — VPS-native C7 unblock + AI model/provider settings (2026-09-22, in progress)
+
+Status: implementation + offline/failure qualification complete; live authenticated inference BLOCKED on the dedicated 9Router credential (minimal owner action in BLOCKERS). Next action after credential is placed: configure the canonical gateway via `/admin/ai-settings`, run the sec-24 synthetic live suite + sec-25 failure suite, then checkpoint ONLY if all gates pass. C8/C9 remain NOT STARTED.
+
 ## Current authorized sequence — offline C7 checkpoint, then live-route qualification (2026-09-22)
 
 Phase A is in progress: selectively checkpoint the reviewed offline C7 baseline and independently verify the authorized `feat/windows-local-dev` remote. Phase B audits existing provider/routing architecture; Phase C may add only the minimum provider-neutral C7 adapter wiring; Phase D performs controlled synthetic live inference only through an approved existing route. If the route is unavailable, stop with C7 PARTIAL. Do not start C8/C9, build the Recruitment Knowledge Hub, send outbound messages, or change production/VPS. No C7 final checkpoint is permitted unless live qualification succeeds.

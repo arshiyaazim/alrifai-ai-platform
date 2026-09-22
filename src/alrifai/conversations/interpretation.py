@@ -391,6 +391,30 @@ def _prompt(request: InterpretationRequest) -> dict[str, Any]:
             "requirements": [] if request.requirements is None else [item.key for item in request.requirements],
         },
         "output_fields": sorted(_TOP_LEVEL_FIELDS),
+        "output_contract": {
+            "note": "Return a single JSON object with EXACTLY these top-level fields, no more, no fewer.",
+            "schema_version": "Must be exactly the supplied schema_version string.",
+            "status": "One of: interpreted, needs_clarification, insufficient_context.",
+            "language_evidence": "Array of zero or more strings from: bangla, banglish, english, mixed, colloquial, unknown.",
+            "language_confidence": "A number 0..1, or null.",
+            "intent_hypotheses": "Array of objects with EXACTLY {label: string, domain: string-or-null, confidence: number 0..1, message_ids: [UUID from allowed message ids], turn_ids: [UUID from allowed turn ids]}.",
+            "subject_references": "Array of objects with EXACTLY {kind: one of current_person, third_party, unresolved, label: string-or-null, person_id: UUID-or-null (only the supplied person_id, else null), resolved: boolean, message_ids: [UUID from allowed message ids]}.",
+            "extracted_claims": "Array of objects with EXACTLY {field: string, value: JSON value, evidence_state: one of unknown, provided, candidate_claimed (never staff_reviewed or verified), confidence: number 0..1, message_ids: [UUID from allowed message ids]}.",
+            "missing_information": "Null, or an array of strings each matching a canonical_requirements key.",
+            "goal_evidence": "Null, or an object with EXACTLY {label: string, confidence: number 0..1, message_ids: [UUID from allowed message ids], next_information_needs: [strings]}.",
+            "topic_associations": "Array of objects with EXACTLY {topic_id: UUID-or-null from allowed topic ids, relation: one of current, related, historical, unresolved, confidence: number 0..1, message_ids: [UUID from allowed message ids]}.",
+            "previous_answer_ids": "Array of UUIDs from allowed previous_answers (may be empty).",
+            "grounding_refs": "Array of reference strings from allowed knowledge (may be empty).",
+            "required_domain_reads": "Array of zero or more strings from: role_conditions, application_status, approved_document_policy, approved_location, selection_decision.",
+            "clarification_or_escalation": "Array of strings (may be empty, never null).",
+            "uncertainty": "Array of strings (may be empty, never null).",
+            "rules": [
+                "Confidence values are NUMBERS between 0 and 1, never words like high or low.",
+                "IDs must be copied exactly from allowed_evidence_ids; never invent UUIDs or references.",
+                "Arrays listed as arrays must be arrays; only documented nullable fields may be null.",
+                "Do not decide eligibility, hiring, authorization, or protected actions.",
+            ],
+        },
     }
 
 

@@ -28,6 +28,17 @@ local web application:
 The launcher loads `.env.local` automatically and verifies the database before
 starting. Never commit `.env.local` or copy it to production.
 
+On the VPS development environment, use the server-side launcher so the
+gitignored repository `.env` is loaded without exporting credentials into the
+agent shell:
+
+```bash
+./scripts/dev-start.sh --reload
+```
+
+It never prints secret values, sends them to the browser, or stores them in
+PostgreSQL. Existing environment variables take precedence.
+
 Open `http://127.0.0.1:8000/`, or use VS Code's Command Palette → **Simple
 Browser: Show**. Bootstrap the approved Owner interactively without putting a
 password in the command line:

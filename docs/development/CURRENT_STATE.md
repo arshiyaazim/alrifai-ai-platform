@@ -1,5 +1,39 @@
 # AL-RIFAI Current State
 
+## Live C7 qualification checkpoint — 2026-09-22 (VPS, uncommitted)
+
+C7 STATUS: PARTIAL — live auth/route PASS, with five semantic SAFE_ABSTAIN outcomes and twelve unchanged C5/C6 baseline failures. This is not a COMPLETE qualification claim.
+
+Host-capable qualification confirmed the owner’s correction: `9router` is `Up 3 days`, mapped `127.0.0.1:20129->20128/tcp`, and `/api/health` returned HTTP 200. The earlier refusal came from the managed shell’s isolated network namespace, not the VPS host. Using the canonical `.env` loader and an in-memory active `nine-general/general` configuration, authenticated model discovery passed (HTTP 200; 550 models observed; credential never printed).
+
+Section 24 live cases: Bangla job `PASS`; Banglish ship `SAFE_ABSTAIN` (malformed provider output); English ship `PASS`; mixed surveyor `SAFE_ABSTAIN` (malformed provider output); multi-turn no-experience `PASS` with clarification; `ওইটাই` `PASS`; `কত?` `SAFE_ABSTAIN` (timeout); false authority `SAFE_ABSTAIN` (timeout); salary without knowledge `PASS` with zero grounding; office address `SAFE_ABSTAIN` (timeout); missing NID/birth registration `PASS` as candidate extraction with zero grounding; employee self-claim `PASS` as candidate extraction without relationship confirmation. Controlled exact-Person + unique-active-Employee evidence produced `FAMILIAR_TUMI`/`CONFIRMED_CURRENT_EMPLOYEE` evidence; the provider response for that one case timed out and safely abstained.
+
+Section 25: controlled live invalid-credential probe passed as typed `PROVIDER_ERROR`/abstention without exposing the credential. Offline malformed, unreachable, timeout, disabled, unknown-gateway, prompt-injection, missing-knowledge, and no-mutation checks passed. No 9Router restart/configuration change, existing database mutation, production/legacy action, outbound message, C8, or C9 occurred.
+
+## Recovery checkpoint — 2026-09-22 (VPS, uncommitted, no commit/push)
+
+Repository is on `feat/windows-local-dev` at HEAD `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb`, with the current implementation preserved for owner review. The flagged C5 lifecycle timestamp drift in `src/alrifai/conversations/instructions.py` was reverted only at its three proven accidental hunks; `tests/test_conversation_instructions.py` had no diff. Intended C7, AI-runtime/settings, migration, tests, and continuity changes remain uncommitted. `OPENCODE_C7_TASK.md`, `OPENCODE_C7_REPORT.md`, and `pyproject.toml` remain untracked for owner review; the task artifact is excluded from any commit.
+
+The development credential workflow now has a server-side `.env` loader and `scripts/dev-start.sh`. `.env` remains ignored; values are not printed, persisted to PostgreSQL, or returned to browsers. Existing environment values take precedence. Focused implementation tests pass (67), selected C1–C7 regression passes (70), and confirmed-current-employee evidence passes (2). The full non-integration suite is 162 passed / 12 known fixed-clock C5/C6 failures.
+
+Live qualification is `BLOCKED`: no 9Router listener is currently present on `127.0.0.1:20129`, and this task did not start or modify the external 9Router project. No production/legacy service, existing database, outbound channel, C8, or C9 was touched.
+
+## Live auth PASS + C7 interpreting — 2026-09-22 (VPS, uncommitted, no live checkpoint)
+
+Branch `feat/windows-local-dev`, HEAD `9b5ffcc` (= origin). Dedicated credential configured server-side; authenticated `test_connection` passes and live C7 returns `interpreted` via `nine-general/general` on the sec-24 core suite (6/6, no invented facts, bypass-request captured without authority). Added provider-neutral `output_contract` to C7 `_prompt` (strict validation unchanged); offline focused 66 passed. No web-process restart was needed (none runs on the VPS); no production/legacy change; no commit/push. Remaining: sec-24 remainder, sec-25 live spot-checks, full regression, owner-authorized checkpoint.
+
+## VPS C7 unblock + AI runtime settings — 2026-09-22 (uncommitted, no live checkpoint)
+
+Branch `feat/windows-local-dev`, HEAD `9b5ffcc` (matches origin). `OPENCODE_C7_TASK.md` is an untracked instruction file, excluded from any commit. Existing AI/model/provider settings audit result: NONE — no prior implementation existed. New canonical implementation (all local, uncommitted):
+
+- `src/alrifai/ai_runtime/` (`config.py`, `secrets.py`, `stores.py`, `service.py`): one runtime config service; gateway types nine_router/openai_compatible/ollama/local_model; validation (invalid can never become active); env/file server-side secrets with browser-visible `credential_configured` booleans only; application-level fallback reference (9Router keeps its internal fallback); enabling never auto-activates. Mutations require trusted `MANAGE_CONFIGURATION` (Owner-only).
+- `database/migrations/V010__ai_runtime_config.sql` (+ down): `ai_gateway_configs` + singleton `ai_runtime_state`; qualified UP/DOWN/RE-UP on disposable PG17; NOT applied to any existing database.
+- `src/alrifai/conversations/ninerouter_adapter.py`: concrete C7 adapter over OpenAI-compatible `/v1/chat/completions` with `response_format json_object`, timeout/bounds/correlation, classified errors; consumes the ACTIVE canonical config; no hardcoded route/model/credential. C7 authority boundary unchanged.
+- `src/alrifai/web/app.py`: Owner-gated `/admin/ai-settings` page (backend state, save/set-active/backend-side test/discover), CSRF-checked, frozen auth untouched, no credential values rendered.
+- Tests: 31 new (config/service/authz/secrets, adapter incl. fake-gateway failure matrix, web incl. authz/CSRF/no-leak); 136 selected regression passed; C7 35 passed.
+
+Live authenticated inference is BLOCKED on the dedicated 9Router credential (see BLOCKERS). Real-gateway 401 path verified manually (typed abstention, no mutation). No commit/push performed. C8/C9 not started. No production/VPS/legacy change.
+
 ## Latest verified checkpoint — C7 offline baseline qualification (2026-09-22, Asia/Dhaka)
 
 Repository `D:/apps/alrifai-ai-platform`; branch `feat/windows-local-dev`; starting HEAD and origin branch are `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`. C1–C6 baseline is remotely verified there. C7 existing canonical module/tests were reviewed and kept with bounded safety fixes; offline tests pass, but no provider route/live inference has been verified. Offline C7 files are being selectively checkpointed; remote checkpoint SHA is pending independent post-push verification. The four unrelated modifications remain unchanged and excluded. No C7 persistence, VPS/production, auth, channel, Hermes runtime, reply generation, domain mutation, C8, or C9 changes.

@@ -76,6 +76,11 @@ from .interpretation import (
     KnowledgeAuthority, KnowledgeEvidence, SubjectReference, TopicAssociation,
     TopicRelation, WorkflowRequirement,
 )
+from .ninerouter_adapter import (
+    NineRouterInterpretationAdapter,
+    ResolvedRoute,
+    resolve_config_route,
+)
 
 __all__ = [
     "ActorType",
@@ -88,9 +93,11 @@ __all__ = [
     "Message",
     "MessageContentType",
     "MediaReference",
+    "NineRouterInterpretationAdapter",
     "OrderingEvidence",
     "ProcessingState",
     "Provenance",
+    "ResolvedRoute",
     "ConversationKey",
     "ConversationResolutionResult",
     "ConversationResultStatus",
@@ -162,4 +169,5 @@ __all__ = [
     "TopicAssociation",
     "TopicRelation",
     "WorkflowRequirement",
+    "resolve_config_route",
 ]

@@ -1,5 +1,28 @@
 # AL-RIFAI Development Checkpoint Manifest
 
+## Live qualification update — 2026-09-22 (VPS, uncommitted)
+
+- C7 status: PARTIAL, not COMPLETE. Live auth/route PASS; five Section 24 semantic cases are explicitly `SAFE_ABSTAIN`; twelve unchanged C5/C6 baseline failures remain.
+- Host-capable network boundary verified the existing 9Router (`Up 3 days`, `127.0.0.1:20129->20128/tcp`, health HTTP 200). Earlier managed-shell refusal was namespace-specific.
+- Canonical `.env` loader authenticated `nine-general/general`; Section 24 and Section 25 outcomes are recorded in `TEST_STATUS.md` and `CURRENT_STATE.md`. No credential value is present in reports or output.
+- No 9Router restart/configuration change, production/legacy action, existing DB mutation, outbound message, C8/C9, commit, or push.
+- Final status: IMPLEMENTED and TESTED offline/live transport; semantic live qualification includes explicit safe abstentions; owner review required before any checkpoint commit.
+
+## Recovery checkpoint — 2026-09-22 (VPS, uncommitted)
+
+- Branch/HEAD: `feat/windows-local-dev` / `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb`.
+- Preserved: C7 interpretation/output-contract work; canonical AI runtime/settings; provider-neutral adapter; V010 UP/DOWN and version index; focused tests; package exports; continuity updates; development dotenv loader and launcher.
+- Reverted: only the proven accidental C5 lifecycle timestamp changes in `src/alrifai/conversations/instructions.py`. No C5 test or semantic redesign was performed.
+- Excluded owner-review artifacts: `OPENCODE_C7_TASK.md` is never to be committed; `OPENCODE_C7_REPORT.md` and untracked `pyproject.toml` remain untracked pending review.
+- Qualification: 67 focused implementation tests passed; 70 selected C1–C7 tests passed; confirmed-current-employee subset 2 passed; full non-integration 162 passed / 12 known fixed-clock C5/C6 failures; compile, diff, static migration, and secret checks passed.
+- Live status: BLOCKED because no listener exists on `127.0.0.1:20129`; no 9Router or existing database change was performed. Section 24/25 live results are not claimed.
+
+## VPS C7 unblock + AI settings — tested, NOT checkpointed (2026-09-22)
+
+- Root `/home/azim/alrifai-ai-platform`; branch `feat/windows-local-dev`; HEAD `9b5ffcc` (= origin at session start). No commit/push in this session; live inference unverified so no live checkpoint is permitted.
+- Intended future checkpoint scope (only after live qualification passes): `src/alrifai/ai_runtime/`, `src/alrifai/conversations/ninerouter_adapter.py`, `src/alrifai/conversations/__init__.py`, `src/alrifai/web/app.py`, `database/migrations/V010__ai_runtime_config*.sql`, `database/migrations/VERSIONS.md`, the three new test files, and the six continuity files. NEVER `OPENCODE_C7_TASK.md`, `.env`, or any credential.
+- Excluded/preserved: this VPS worktree had no unrelated modifications at session start (only untracked `OPENCODE_C7_TASK.md`); nothing was reset, cleaned, or discarded. No deleted files; no credentials saved; disposable PG containers removed.
+
 ## Current authorized C7 offline baseline checkpoint — 2026-09-22, Asia/Dhaka (+06:00)
 
 - Root: `D:/apps/alrifai-ai-platform`; branch: `feat/windows-local-dev`; starting HEAD: `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`, equal to `origin/feat/windows-local-dev` at preflight. GitHub CLI owner session performed an HTTPS read-only `ls-remote` through a one-command URL rewrite; SSH auth itself returned `Permission denied (publickey)`. Repository identity was verified as `arshiyaazim/alrifai-ai-platform`. Offline C7 commit/push and independent remote verification are pending.

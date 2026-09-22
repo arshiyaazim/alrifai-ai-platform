@@ -1,5 +1,63 @@
 # Test Status
 
+## Live C7 qualification — 2026-09-22 (VPS, uncommitted)
+
+| Scope | Actual result | Notes |
+|---|---:|---|
+| Managed-shell vs host boundary | RESOLVED | Managed shell could not see loopback; host-capable execution saw `9router` Up 3 days, port mapping, listeners, and health HTTP 200. |
+| Authenticated canonical route | PASS | Server-side `.env` loader; `nine-general/general`; HTTP 200; 550 models observed; credential never printed. |
+| Section 24 live semantics | PASS / SAFE_ABSTAIN | Bangla PASS; Banglish SAFE_ABSTAIN malformed; English PASS; mixed SAFE_ABSTAIN malformed; multi-turn PASS; `ওইটাই` PASS; `কত?` SAFE_ABSTAIN timeout; false authority SAFE_ABSTAIN timeout; salary PASS with zero grounding; office SAFE_ABSTAIN timeout; NID/birth-registration PASS candidate-only; employee self-claim PASS candidate-only. |
+| Confirmed-current-employee control | PASS evidence / SAFE_ABSTAIN response | Exact Person + unique active Employee evidence produced `CONFIRMED_CURRENT_EMPLOYEE`/`FAMILIAR_TUMI`; provider timed out, so no semantic response was claimed. |
+| Section 25 live auth failure | PASS | Invalid in-memory credential produced typed provider error and abstention; no 9Router configuration change. |
+| Section 25 offline matrix | PASS | Malformed output, unreachable, timeout, disabled/unknown gateway, prompt injection, missing knowledge, no mutation, and no outbound delivery covered by focused tests. |
+| Focused C7/runtime/settings | PASSED — 67 | Rerun with existing project environment. |
+| Selected C1–C7 regression | PASSED — 70 | Rerun; confirmed relationship subset 2 passed. |
+| Full non-integration regression | 162 passed / 12 failed | Unchanged fixed-clock C5/C6 instruction/context assertions; no C5 changes made. |
+| V010 | STATIC VERIFIED / NOT APPLIED | No existing database changed. |
+| Compile / diff / secret checks | PASSED | Final checks pending after continuity edits. |
+
+## Recovery verification — 2026-09-22 (VPS, uncommitted)
+
+| Scope | Actual result | Notes |
+|---|---:|---|
+| Development dotenv workflow | PASSED | `tests/test_dev_env.py`; ignored `.env` names are loaded server-side without overriding existing environment values or printing values. |
+| AI runtime/settings + adapter + C7 focused | PASSED — 67 | `tests/test_dev_env.py tests/test_ai_runtime_config.py tests/test_ninerouter_adapter.py tests/test_web_ai_settings.py tests/test_conversation_interpretation.py`; loopback fake gateway/TestClient only. |
+| C1–C7 relevant non-DB regression | PASSED — 70 | Conversation C3, models, topics, resolution, identity, phone, authorization, and employee-security modules. |
+| Confirmed-current-employee fixture | PASSED — 2 | Exact Person plus one unique active Employee yields `CONFIRMED_CURRENT_EMPLOYEE`; self/unresolved paths remain unknown in the existing tests. |
+| Full non-integration regression | 162 passed / 12 failed | Failures are unchanged fixed-clock C5/C6 instruction-selection assertions; no C5 redesign or test weakening performed. |
+| Live 9Router transport/auth | BLOCKED | No listener on `127.0.0.1:20129`; no external 9Router start/reconfiguration performed. |
+| Section 24 semantic live suite | NOT RUN / BLOCKED | Required live cases cannot be truthfully classified until the approved gateway is running. |
+| Section 25 live failure spot-checks | NOT RUN / BLOCKED | Offline fake-gateway failure matrix is covered by focused tests; live gateway was not intentionally broken. |
+| V010 | STATIC VERIFIED / NOT APPLIED | UP/DOWN ordering and declarations checked; no existing database was changed. |
+| Compile / diff / secret checks | PASSED | `compileall`; `git diff --check`; structural scan found no credential assignment/token in changed files; `.env` ignored. |
+
+## Live auth + C7 interpretation — 2026-09-22 (VPS, branch feat/windows-local-dev, HEAD 9b5ffcc)
+
+| Scope | Actual result | Notes |
+|---|---|---|
+| 9Router reachability (no key sent) | PASS | `/api/health` ok; `/v1/models` without key → 401 as expected. |
+| Authenticated connection (backend-side, InMemory store) | PASS | `credential_configured=True`, `test_connection` ok over HTTP 200, combo `general` present. Credential value never printed/logged/stored. |
+| C7 live smoke + sec-24 core (6 prompts) | PASS | All interpreted/needs_clarification, zero abstentions this run; Bangla/Banglish/English job inquiry, bypass-request captured without authority, no invented salary/address facts. Route `nine-general/general`. |
+| Offline focused (after prompt-contract fix) | PASSED — 66 | C7 interpretation 35, adapter 10, runtime config 14, web AI settings 7. |
+| `git diff --check` / secret scan | PASSED | No whitespace errors; no credential assignments in tracked diff; key-pattern scan of new C7/AI files 0 hits; `.env` remains gitignored/untracked. |
+| Full sec-24 remainder + sec-25 live | NOT RUN | Multi-turn, anaphora, NID, employee-claim, CONFIRMED fixture, live failure spot-checks still pending. |
+| Web process restart | NOT REQUIRED / NOT PERFORMED | No AL-RIFAI web process runs on the VPS; no production/legacy service touched. |
+
+## VPS C7 unblock + AI runtime settings — 2026-09-22 (VPS, branch feat/windows-local-dev, HEAD 9b5ffcc)
+
+| Scope | Actual result | Notes |
+|---|---:|---|
+| AI runtime focused (new) | PASSED — 31 | `tests/test_ai_runtime_config.py` (14), `tests/test_ninerouter_adapter.py` (10), `tests/test_web_ai_settings.py` (7); fake loopback gateway + TestClient, no real credential. |
+| C7 focused | PASSED — 35 | `tests/test_conversation_interpretation.py`; offline injected adapter. |
+| Selected regression (C7/C3/topics/resolution/models/identity/phone/auth/employee) | PASSED — 136 | Explicit 14-module run incl. all 31 new tests; no DB URL. |
+| V010 migration | PASSED | Disposable loopback PG17: foundation + UP, store roundtrip (save/save/set_active/view/audit rows=3), DOWN, RE-UP; container removed. |
+| Real-gateway 401 path | PASS (manual) | Live 127.0.0.1:20129, no credential: adapter POST → 401 → C7 ABSTAINED/PROVIDER_ERROR, no mutation. |
+| Live authenticated inference | BLOCKED / UNVERIFIED | No valid credential for VPS-local 9Router (see BLOCKERS). |
+| Full no-DB suite | 161 passed, 12 FAILED (pre-existing) | 12 failures are C5-instruction/C6-context logic assertions, untouched by this diff; proven pre-existing by rerun with the new adapter import disabled (still 10 failed in instructions module alone). Windows-baseline evidence stands. |
+| Compile/import | PASSED | `compileall` on ai_runtime, conversations, web. |
+| `git diff --check` / secret scan | PASSED | No whitespace errors; no key/token/private-key patterns in changed/new files. |
+| VPS env note | `psycopg[binary]==3.3.6` installed into `/home/azim/.venv` | Matches requirements.txt pin; was missing, blocked all psycopg imports there. No service/config change. |
+
 ## Fresh offline C7 qualification for authorized baseline checkpoint — 2026-09-22
 
 | Scope | Actual result | Notes |

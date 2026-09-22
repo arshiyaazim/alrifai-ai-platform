@@ -1,5 +1,41 @@
 # Agent Handoff
 
+## Current live qualification checkpoint — 2026-09-22 (VPS, no commit/push)
+
+Host-capable execution verified the existing `9router` container (`Up 3 days`), loopback mapping, listeners, and HTTP 200 health. The earlier no-listener observation was from the managed shell’s isolated network namespace. The canonical `.env` loader authenticated `nine-general/general` successfully; the credential remained server-side and was never printed.
+
+Section 24 was run once per case with typed PASS/SAFE_ABSTAIN outcomes: Bangla and English ship/job cases passed; Banglish/mixed malformed outputs abstained; multi-turn and `ওইটাই` passed; ambiguous/false-authority/office cases safely abstained on bounded timeouts; salary had no grounding; NID and employee self-claim remained candidate-only. The controlled exact-Person + unique-active-Employee fixture yielded the expected relationship evidence and familiar address style, while its provider response safely abstained on timeout.
+
+Section 25 invalid-auth live probe passed as typed provider error/abstention. Offline failure matrix, 67 focused tests, 70 selected regression tests, compile, and final safety checks are recorded in `TEST_STATUS.md`. Full non-integration remains 162 passed / 12 unchanged fixed-clock C5/C6 failures. No service restart, Docker change, V010 application, database mutation, outbound message, C8/C9, commit, or push.
+
+Owner review is the only remaining checkpoint action.
+
+## Current recovery checkpoint — 2026-09-22 (VPS, no commit/push)
+
+Worktree: `/home/azim/alrifai-ai-platform`, branch `feat/windows-local-dev`, HEAD `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb`. All current work was preserved. Only the three proven accidental C5 timestamp hunks in `src/alrifai/conversations/instructions.py` were reverted; `tests/test_conversation_instructions.py` was unchanged. `OPENCODE_C7_TASK.md` remains an excluded untracked instruction artifact.
+
+Implemented and offline-qualified: canonical AI runtime/settings, SecretResolver, provider-neutral C7 adapter, strict C7 output contract, V010 files (not applied), Owner-gated AI settings, and the server-side development dotenv path (`scripts/dev-start.sh`). The ignored `.env` remains server-side; no value was printed or stored in the database/browser.
+
+Evidence: focused C7/runtime/settings 67 passed; selected C1–C7 regression 70 passed; confirmed-current-employee 2 passed; compile/diff/static migration/secret checks passed. Full non-integration regression is 162 passed / 12 known fixed-clock C5/C6 failures. No production restart, legacy modification, existing DB mutation, outbound message, C8, or C9 occurred.
+
+Live qualification is no longer blocked: the host-capable execution boundary verified the existing 9Router and the canonical active `nine-general/general` route. Section 24/25 outcomes are recorded above; owner review is the remaining action before checkpoint publication.
+
+## Live auth + C7 interpreting — prompt-contract fix applied, not checkpointed (2026-09-22, VPS)
+
+1. Repo `/home/azim/alrifai-ai-platform`, branch `feat/windows-local-dev`, HEAD `9b5ffcc` (= origin). Same uncommitted C7/AI-settings delta as before, plus `src/alrifai/conversations/interpretation.py` (`output_contract` in `_prompt`) and continuity updates. No commit/push.
+2. Startup finding: no AL-RIFAI web process runs on the VPS (no systemd unit, no compose web service, no listener); canonical start is manual `python -m uvicorn src.alrifai.web.app:app` and `.env` is NOT auto-loaded (no dotenv dep; start script only sources `.env.local`). `SecretResolver` reads `os.environ` per request. Restart target: NONE — nothing restarted; when the web is next started, export `NINE_ROUTER_API_KEY` into that shell first.
+3. Verification (credential never printed/logged/stored): `/api/health` ok, no-key `/v1/models` → 401; backend `test_connection` ok (HTTP 200, `general` present); live C7 `interpreted` on sec-24 core 6/6 via `nine-general/general`; offline focused 66 passed; `git diff --check` + secret scans passed.
+4. Next: sec-24 remainder + sec-25 live spot-checks + full regression, then owner-authorized checkpoint (`checkpoint: conversations C7 live-qualified with runtime AI settings`, push only feat/windows-local-dev, verify remote SHA). C8/C9 NOT STARTED. No production/legacy change.
+
+## VPS C7 unblock + AI settings — implementation complete, live credential pending (2026-09-22)
+
+1. Repo `/home/azim/alrifai-ai-platform`, branch `feat/windows-local-dev`, HEAD `9b5ffcc` (= origin). Worktree: tracked modifications in `VERSIONS.md`, `conversations/__init__.py`, `web/app.py`; new: `src/alrifai/ai_runtime/`, `conversations/ninerouter_adapter.py`, V010 up/down, 3 test files; untracked `OPENCODE_C7_TASK.md` (never commit). No commit/push performed.
+2. New files: `src/alrifai/ai_runtime/{__init__,config,secrets,service,stores}.py`; `src/alrifai/conversations/ninerouter_adapter.py`; `database/migrations/V010__ai_runtime_config{,_down}.sql`; `tests/test_ai_runtime_config.py`, `tests/test_ninerouter_adapter.py`, `tests/test_web_ai_settings.py`.
+3. Tests: new 31 passed; C7 35 passed; selected 14-module regression 136 passed; V010 UP/DOWN/RE-UP + store/audit roundtrip on disposable PG17 (removed); real-gateway 401 path verified manually (abstain, no mutation). Full no-DB: 161 passed + 12 pre-existing C5/C6 failures (proven unrelated by exclusion rerun). Compile, `git diff --check`, secret scan passed.
+4. Live authenticated inference BLOCKED: create one new 9Router API key and place it server-side (details in BLOCKERS). Then: configure via `/admin/ai-settings`, run task sec-24/25 suites, checkpoint only on full pass (`checkpoint: conversations C7 live-qualified with runtime AI settings`, push only feat/windows-local-dev, verify remote SHA).
+5. Boundaries kept: no legacy/production/VPS-service change; no 9Router reconfiguration or existing-key use; V010 not applied to existing DBs; no Ollama install; no C8/C9; no Recruitment Knowledge Hub; no outbound sending; no secrets in files (VPS `.env` key format noted by length only, value never printed/stored).
+6. VPS env note: installed `psycopg[binary]==3.3.6` (requirements pin) into `/home/azim/.venv`; it was missing and blocked all psycopg imports there.
+
 ## Latest handoff — C7 offline checkpoint / live adapter gate (2026-09-22)
 
 1. Repo `D:/apps/alrifai-ai-platform`, branch `feat/windows-local-dev`; starting HEAD `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`, matching the verified C6 remote baseline at session start. Offline C7 checkpoint is authorized; record its exact commit/remote SHA only after independent verification.

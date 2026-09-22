@@ -15,6 +15,15 @@ import psycopg
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
+from src.alrifai.ai_runtime.config import (
+    AiConfigError,
+    GatewayAuthMode,
+    GatewayConfig,
+    GatewayType,
+)
+from src.alrifai.ai_runtime.secrets import SecretResolver
+from src.alrifai.ai_runtime.service import AiRuntimeService
+from src.alrifai.ai_runtime.stores import InMemoryAiRuntimeStore, PostgresAiRuntimeStore
 from src.alrifai.auth.service import (
     AuthenticationError,
     create_pending_account,
@@ -512,6 +521,213 @@ def logout(request: Request, csrf_token: str = Form(...)) -> RedirectResponse:
     response.delete_cookie("alrifai_session", domain=_cookie_domain())
     response.delete_cookie("alrifai_csrf", domain=_cookie_domain())
     return response
+
+
+def _config_admin(request: Request):
+    session = _admin(request)
+    if session is None:
+        return None
+    principal, _ = session
+    try:
+        require_capability(principal, Capability.MANAGE_CONFIGURATION)
+    except Exception:
+        return None
+    return session
+
+
+def _valid_csrf(request: Request, csrf_token: str) -> bool:
+    session = _session(request)
+    if session is None:
+        return False
+    _, csrf_hash = session
+    return bool(csrf_token) and _hash_token(csrf_token) == csrf_hash
+
+
+def _ai_service(connection) -> tuple[AiRuntimeService, str | None]:
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM ai_gateway_configs LIMIT 1")
+    except Exception:
+        connection.rollback()
+        note = "AI runtime persistence is unavailable: migration V010 is not applied to this database. Changes are kept in memory only."
+        return AiRuntimeService(store=InMemoryAiRuntimeStore(), secrets=SecretResolver()), note
+    return AiRuntimeService(store=PostgresAiRuntimeStore(connection), secrets=SecretResolver()), None
+
+
+def _ai_settings_body(request: Request, view, note: str = "", extra: str = "") -> str:
+    csrf = html.escape(request.cookies.get("alrifai_csrf", ""), quote=True)
+    rows = ""
+    for gateway in view.gateways:
+        marker = "active" if gateway.is_active else ("enabled" if gateway.enabled else "disabled")
+        cred = "yes" if gateway.credential_configured else "no"
+        tested = "untested" if gateway.last_test_ok is None else ("ok" if gateway.last_test_ok else "failed")
+        rows += (
+            f"<tr><td>{html.escape(gateway.gateway_id)}</td><td>{html.escape(gateway.display_name)}</td>"
+            f"<td>{html.escape(gateway.gateway_type.value)}</td><td>{html.escape(gateway.endpoint)}</td>"
+            f"<td>{html.escape(gateway.route)}</td><td>{marker}</td><td>{cred}</td><td>{tested}</td>"
+            f"<td><form method='post' action='/admin/ai-settings/set-active'>"
+            f"<input type='hidden' name='csrf_token' value='{csrf}'>"
+            f"<input type='hidden' name='gateway_id' value='{html.escape(gateway.gateway_id, quote=True)}'>"
+            f"<button class='secondary' type='submit'>Activate</button></form>"
+            f"<form method='post' action='/admin/ai-settings/test'>"
+            f"<input type='hidden' name='csrf_token' value='{csrf}'>"
+            f"<input type='hidden' name='gateway_id' value='{html.escape(gateway.gateway_id, quote=True)}'>"
+            f"<button class='secondary' type='submit'>Test</button></form>"
+            f"<form method='post' action='/admin/ai-settings/discover'>"
+            f"<input type='hidden' name='csrf_token' value='{csrf}'>"
+            f"<input type='hidden' name='gateway_id' value='{html.escape(gateway.gateway_id, quote=True)}'>"
+            f"<button class='secondary' type='submit'>Discover</button></form></td></tr>"
+        )
+    type_options = "".join(f"<option value='{item.value}'>{html.escape(item.value)}</option>" for item in GatewayType)
+    auth_options = "".join(f"<option value='{item.value}'>{html.escape(item.value)}</option>" for item in GatewayAuthMode)
+    persist = f"<p class='muted'>{html.escape(note)}</p>" if note else ""
+    active = html.escape(view.active_gateway_id or "none")
+    return f"""
+      <div class='dashboard'><aside><div class='brand'>AL-RIFAI</div><p class='muted'>AI runtime settings</p>
+        <nav><a href='/home'>Home / AI Chat</a><a href='/admin'>Admin</a></nav></aside>
+      <section class='content'><header><div><p class='eyebrow'>ADMINISTRATION</p><h1>AI / Model Settings</h1>
+        <p class='muted'>Active gateway: {active}. This backend state controls the actual AI runtime.</p>{persist}</div></header>
+      <article class='card'><h2>Gateways</h2><table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Endpoint</th><th>Route</th><th>State</th><th>Credential</th><th>Last test</th><th>Actions</th></tr></thead>
+        <tbody>{rows or '<tr><td colspan="9">No gateways configured</td></tr>'}</tbody></table></article>
+      {extra}
+      <article class='card'><h2>Save gateway</h2>
+        <form method='post' action='/admin/ai-settings/save'>
+        <label>Gateway ID<input name='gateway_id' required></label>
+        <label>Display name<input name='display_name' required></label>
+        <label>Type<select name='gateway_type'>{type_options}</select></label>
+        <label>Endpoint<input name='endpoint' placeholder='http://127.0.0.1:20129/v1' required></label>
+        <label>Auth mode<select name='auth_mode'>{auth_options}</select></label>
+        <label>Secret reference (env:NAME or file:/path; required for api_key)<input name='secret_ref'></label>
+        <label>Route / model<input name='route' required></label>
+        <label>Fallback gateway ID (optional)<input name='fallback_gateway_id'></label>
+        <label class='check'><input type='checkbox' name='enabled' checked> Enabled</label>
+        <label class='check'><input type='checkbox' name='is_local'> Local endpoint</label>
+        <input type='hidden' name='csrf_token' value='{csrf}'><button type='submit'>Save gateway</button></form>
+        <p class='muted'>Saving never exposes credentials. Enabling a gateway never activates it; use Activate explicitly. Invalid configuration cannot become active.</p></article>
+      </section></div>
+    """
+
+
+@app.get("/admin/ai-settings", response_class=HTMLResponse)
+def ai_settings_view(request: Request, message: str = "") -> HTMLResponse:
+    if _config_admin(request) is None:
+        return RedirectResponse("/", status_code=303)
+    try:
+        with database() as connection:
+            service, note = _ai_service(connection)
+            view = service.current()
+    except (RuntimeError, psycopg.Error):
+        return page("AI Settings", "<section class='card narrow'><h1>AI Settings</h1><p>Configuration is temporarily unavailable.</p></section>")
+    body = _ai_settings_body(request, view, note or "")
+    return page("AI Settings", body, message)
+
+
+def _ai_settings_action(request: Request, csrf_token: str):
+    """Return (principal, None) when allowed, else (None, denial response)."""
+    session = _config_admin(request)
+    if session is None:
+        return None, RedirectResponse("/", status_code=303)
+    if not _valid_csrf(request, csrf_token):
+        return None, ai_settings_view(request, "Invalid session token. Please retry.")
+    return session[0], None
+
+
+@app.post("/admin/ai-settings/save")
+def ai_settings_save(
+    request: Request,
+    gateway_id: str = Form(...),
+    display_name: str = Form(...),
+    gateway_type: str = Form(...),
+    endpoint: str = Form(...),
+    auth_mode: str = Form(...),
+    route: str = Form(...),
+    secret_ref: str = Form(""),
+    fallback_gateway_id: str = Form(""),
+    enabled: str = Form(""),
+    is_local: str = Form(""),
+    csrf_token: str = Form(...),
+) -> HTMLResponse:
+    principal, denied = _ai_settings_action(request, csrf_token)
+    if denied is not None:
+        return denied
+    try:
+        config = GatewayConfig(
+            gateway_id=gateway_id.strip(),
+            display_name=display_name.strip(),
+            gateway_type=GatewayType(gateway_type),
+            endpoint=endpoint.strip(),
+            auth_mode=GatewayAuthMode(auth_mode),
+            secret_ref=secret_ref.strip() or None,
+            route=route.strip(),
+            enabled=bool(enabled),
+            is_local=bool(is_local),
+            fallback_gateway_id=fallback_gateway_id.strip() or None,
+        )
+    except ValueError:
+        return ai_settings_view(request, "Unsupported gateway type or auth mode.")
+    try:
+        with database() as connection:
+            service, _ = _ai_service(connection)
+            service.save_gateway(principal, config)
+    except AiConfigError as exc:
+        return ai_settings_view(request, f"Configuration rejected: {exc}")
+    except (RuntimeError, psycopg.Error):
+        return ai_settings_view(request, "Configuration store is temporarily unavailable.")
+    return RedirectResponse("/admin/ai-settings", status_code=303)
+
+
+@app.post("/admin/ai-settings/set-active")
+def ai_settings_activate(request: Request, gateway_id: str = Form(...), csrf_token: str = Form(...)) -> HTMLResponse:
+    principal, denied = _ai_settings_action(request, csrf_token)
+    if denied is not None:
+        return denied
+    try:
+        with database() as connection:
+            service, _ = _ai_service(connection)
+            service.set_active(principal, gateway_id.strip())
+    except AiConfigError as exc:
+        return ai_settings_view(request, f"Activation rejected: {exc}")
+    except (RuntimeError, psycopg.Error):
+        return ai_settings_view(request, "Configuration store is temporarily unavailable.")
+    return RedirectResponse("/admin/ai-settings", status_code=303)
+
+
+@app.post("/admin/ai-settings/test")
+def ai_settings_test(request: Request, gateway_id: str = Form(...), csrf_token: str = Form(...)) -> HTMLResponse:
+    principal, denied = _ai_settings_action(request, csrf_token)
+    if denied is not None:
+        return denied
+    try:
+        with database() as connection:
+            service, note = _ai_service(connection)
+            result = service.test_connection(principal, gateway_id.strip())
+            view = service.current()
+    except AiConfigError as exc:
+        return ai_settings_view(request, f"Connection test rejected: {exc}")
+    except (RuntimeError, psycopg.Error):
+        return ai_settings_view(request, "Configuration store is temporarily unavailable.")
+    outcome = "reachable" if result.ok else f"failed ({result.error_code})"
+    extra = f"<article class='card'><h2>Connection test</h2><p>Gateway {html.escape(result.gateway_id)}: {html.escape(outcome)}.</p></article>"
+    return page("AI Settings", _ai_settings_body(request, view, note or "", extra))
+
+
+@app.post("/admin/ai-settings/discover")
+def ai_settings_discover(request: Request, gateway_id: str = Form(...), csrf_token: str = Form(...)) -> HTMLResponse:
+    principal, denied = _ai_settings_action(request, csrf_token)
+    if denied is not None:
+        return denied
+    try:
+        with database() as connection:
+            service, note = _ai_service(connection)
+            models = service.discover_models(principal, gateway_id.strip())
+            view = service.current()
+    except AiConfigError as exc:
+        return ai_settings_view(request, f"Discovery rejected: {exc}")
+    except (RuntimeError, psycopg.Error):
+        return ai_settings_view(request, "Configuration store is temporarily unavailable.")
+    items = "".join(f"<li>{html.escape(item.model_id)}</li>" for item in models) or "<li>no models advertised</li>"
+    extra = f"<article class='card'><h2>Discovered routes/models</h2><ul>{items}</ul></article>"
+    return page("AI Settings", _ai_settings_body(request, view, note or "", extra))
 
 
 CSS = """

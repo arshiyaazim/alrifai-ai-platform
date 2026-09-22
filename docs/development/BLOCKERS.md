@@ -1,5 +1,30 @@
 # Current Blockers and Required Decisions
 
+## Live qualification correction — 2026-09-22 (VPS)
+
+- RESOLVED: 9Router is available from the host-capable execution boundary. The managed shell’s earlier `connection refused` result was namespace-specific and is not a service-health result.
+- Authenticated `test_connection` passed against `http://127.0.0.1:20129/v1`, route `general`; no credential value was printed or persisted.
+- Remaining status is owner review only: live semantic results include safe abstentions for malformed/slow provider output, and the full non-integration suite retains 12 unchanged fixed-clock C5/C6 failures.
+
+## Recovery checkpoint blockers — 2026-09-22 (VPS)
+
+- Live Section 24 and live Section 25 are blocked because `127.0.0.1:20129` currently refuses connections; no 9Router listener is running. The repository `.env` contains the expected key name, but its value was never printed or used in this audit.
+- The new `scripts/dev-start.sh` plus `src/alrifai/ai_runtime/dev_env.py` provide the requested server-side development loading path. `.env` is ignored, process-provided values win, and the credential is not stored in PostgreSQL or sent to the browser.
+- Do not start, reconfigure, or alter `/home/azim/9router` as part of this checkpoint without separate owner authorization. Once the approved gateway is available, rerun the required semantic live cases and live failure spot-checks through the canonical active route.
+- Offline qualification is complete for the implemented scope; the full non-integration suite remains 162 passed / 12 known fixed-clock C5/C6 failures. These failures were not changed or suppressed.
+
+## Credential configured — auth PASS, live C7 interpreting (2026-09-22, VPS)
+
+- Dedicated `alrifai-app` credential is configured as `NINE_ROUTER_API_KEY` in the gitignored VPS `.env` (value never printed/stored elsewhere). Backend `test_connection` → ok (HTTP 200, combo `general` present); no existing client key was read, rotated, or reconfigured.
+- Live C7 now returns `interpreted` end-to-end via route `nine-general/general` (sec-24 core 6/6: Bangla/Banglish/English job inquiry, false-authority captured as bypass-request with no authority granted, office-location and salary inquiries with no invented facts). Free-tier model output is nondeterministic: occasional nonconforming shapes still abstain safely (fail-closed, no mutation). Tightened the provider-neutral `output_contract` in `_prompt` (validation unchanged/strict).
+- Remaining before any checkpoint: sec-24 remainder (multi-turn, anaphora, NID, employee-claim, CONFIRMED fixture), sec-25 live failure spot-checks, full regression, owner-authorized commit. No restart performed: no AL-RIFAI web process exists on the VPS (manual `uvicorn` start only; `.env` is not auto-loaded — it must be exported into the starter shell). No production/legacy change.
+
+## VPS C7 unblock — live credential gate (2026-09-22)
+
+- Live authenticated C7 inference is BLOCKED on one credential step. Verified facts: VPS-local 9Router at `127.0.0.1:20129` is reachable (`/api/health ok`, `/v1/models` without key → 401 as expected); combo `general` exists (kind llm); the repo `.env` `NINE_ROUTER_API_KEY` value is a different key format (63 chars vs 35-char stored keys) and returns 401 here; stored 9Router keys are existing clients' and were not read or used.
+- Minimal owner action (no rotation/deletion/reconfiguration of anything existing): in the 9Router dashboard create one NEW API key (e.g. `alrifai-app`), then place it in the VPS app's server-side secret mechanism (`NINE_ROUTER_API_KEY` env or a root-owned file used via a `file:` secret_ref). After that, set the canonical active gateway to it and rerun the sec-24 synthetic suite for the live checkpoint.
+- Until then: no live checkpoint commit is permitted; C8/C9 remain not started.
+
 ## Latest C7 qualification gate — 2026-09-22
 
 - Live route is not yet audited beyond local repository/configuration sources; no in-application approved model adapter or route contract was found. After the offline baseline remote backup verifies, inspect remaining approved local routing evidence and, only if needed, use existing authorized read-only VPS access. If no existing approved route/authentication is safely usable, mark live inference BLOCKED/UNVERIFIED and stop; do not invent a provider, model, credential, or configuration.
