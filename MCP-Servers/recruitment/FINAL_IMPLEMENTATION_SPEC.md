@@ -442,6 +442,25 @@ The semantic layer distinguishes `unknown`, `provided`, `candidate_claimed`, `st
 
 With trusted identity resolution, Conversations & AI may personalize a reply using the Person’s current/history phone, prior document intake, requested Role, Application status, and missing fields without exposing another person’s data. Recruitment may identify suitable applicants for a future role offer or follow-up using canonical phone and application context. Conversations & AI/outbound infrastructure controls whether and how an outbound message is actually sent; Recruitment cannot bypass outbound authorization, rate limits, consent, or delivery controls.
 
+### 12.5 Natural, knowledge-grounded conversation policy
+
+The assistant is a natural, relationship-aware, goal-oriented business conversation assistant, not a fixed question-answer bot. Knowledge documents are a reference library; examples are illustrative, not prescriptive. C7 interprets meaning and evidence, C8/canonical domain read services supply authoritative business facts and protected decisions, and C9 produces the final natural-language response. No example sentence is an exact-match rule or mandatory script. Wording, explanation length and useful next-step suggestions may adapt while preserving verified facts exactly.
+
+Classify source material before use:
+
+- `AUTHORITATIVE_BUSINESS_FACT`: current approved role/policy value (salary, benefits, duty hours, address, eligibility, role requirements). Preserve numeric values, units, dates and conditions exactly; absent, stale or conflicting facts remain unknown and require a canonical read or escalation.
+- `MANDATORY_BUSINESS_RULE`: only an explicitly identified legal, authorization, or protected canonical policy rule. A sample conversation or style preference cannot promote itself into this class.
+- `FLEXIBLE_OPERATIONAL_GUIDANCE`: practical advice that may be adapted, but cannot override mandatory policy or promise an approval.
+- `CONVERSATION_STYLE_GUIDANCE`: tone and presentation preference, subordinate to verified relationship state and safety.
+- `ILLUSTRATIVE_EXAMPLE`: an example of possible conversation/meaning, never a reply template, policy source, or fixed dialogue tree.
+- `HISTORICAL_OR_SUPERSEDED`: retained for provenance/history, never treated as current without explicit source applicability.
+
+Goal progression is flexible, not a Recruitment state machine. The assistant may collect interest, role preference, experience, conditions, missing information and joining readiness in any order; it must support topic changes, declines and returns, avoid redundant requests, and not repeatedly push recruitment after a decline. A supplementary question or suggestion is optional and must be relevant. Document absence does not itself justify rejection: ask what the candidate has, use only approved alternatives, and mark pending/escalate when staff approval is required. Do not waive mandatory requirements, infer selection, promise employment, or schedule a notification. The example of a message about two hours after agreement is not an approved delay rule; only a canonical Recruitment selection decision and configured notification workflow can authorize selection communication.
+
+Address form follows trusted relationship evidence: unknown persons, applicants, and selected-but-not-yet-joined candidates receive respectful **“আপনি”**. Only a C2-resolved Person with C6 `CONFIRMED_CURRENT_EMPLOYEE` evidence from an active canonical Employee record may be addressed as **“তুমি”**. In unresolved, inactive/former, ambiguous, group-member-mismatch or unsupported cases use **“আপনি”**. A familiar number, application history, user self-claim, or selection status cannot establish current employment; address choice never changes Employee ID.
+
+No approved Recruitment knowledge corpus/service or concrete role/salary/document policy records were found in the current repository. The canonical Role/policy source remains an implementation prerequisite; until available, the assistant must request an authorized domain read or state that the value is unavailable rather than inventing it. Repository search found no canonical office address. Owner confirmation is required to establish whether **“AK Khan Mor, Pahartali, Chattogram”** and **“AK Khan Mor, Victoria No. 1 Gate”** are the same physical location and to approve the exact address string. Neither may be communicated as a verified fact before confirmation.
+
 ## 13. Frontend contract
 
 Internal AL-RIFAI forms call the canonical Recruitment API/domain service directly. The request uses the same input types, trusted session principal, correlation ID, idempotency key, validation, transaction, audit, and event behavior as MCP. MCP is an additional adapter for agent/conversation access, not a required internal hop. Form and message paths must produce equivalent domain results for equivalent authorized inputs.

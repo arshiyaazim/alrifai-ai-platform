@@ -1,5 +1,20 @@
 # Current Blockers and Required Decisions
 
+## Current checkpoint — C6 backup gate and C7 prerequisites (2026-09-22)
+
+- C6 has no remaining reported implementation defect; current fresh qualification: 25 C6 unit tests passed, 15 focused PostgreSQL integration tests passed on disposable loopback PG17, broad DB-enabled suite excluding the seeded-Owner web-auth safety fixture passed 122, and no-DB suite passed 107 with 20 DB-gated skips.
+- Phase A backup gate remains pending until the exact C6 checkpoint commit is pushed and remote branch HEAD/tree are independently verified. C7 must not run before that gate passes.
+- For C7 factual grounding, no approved Recruitment knowledge corpus/service or canonical role/salary/document fact source was found; do not invent facts. Exact office display needs Owner confirmation: “AK Khan Mor, Pahartali, Chattogram” versus “AK Khan Mor, Victoria No. 1 Gate”.
+- Existing web-auth PostgreSQL fixture safety errors from earlier broad runs were not bypassed. Current broad DB regression excluded only that fixture; its 5 earlier safety errors are not counted as product test failures or passes.
+- VPS, production/preserved databases, frozen auth, Hermes runtime and channels were not changed.
+
+## Previous C1–C6 policy-alignment checkpoint — 2026-09-22
+
+- No unresolved C1–C6 implementation blocker was identified by this policy-alignment review.
+- C7 factual grounding prerequisite: no approved Recruitment knowledge corpus/service or canonical role/salary/document fact source was found in the repository; do not invent facts. Exact office display needs Owner confirmation: “AK Khan Mor, Pahartali, Chattogram” vs “AK Khan Mor, Victoria No. 1 Gate”.
+- The C6 PostgreSQL adapter integration test and 15 other relevant PG integration tests were skipped in this task because no approved isolated PG target was configured; no migration/schema change was needed.
+- C7 is NOT STARTED — OWNER APPROVAL REQUIRED. VPS, production/preserved databases, and services were not changed.
+
 ## Current Conversations & AI checkpoint — 2026-09-22
 
 - C5 technical blockers: NONE. Versioned instruction state, deterministic selection, Owner/Admin precedence, scope/privacy safeguards, and V009 PostgreSQL qualification are complete locally.

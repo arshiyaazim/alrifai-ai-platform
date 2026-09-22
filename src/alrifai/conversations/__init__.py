@@ -61,6 +61,13 @@ from .instructions import (
     InstructionScope, InstructionSelection, InstructionService, InstructionStatus,
     InstructionVersion, PostgresInstructionStore, SelectionEvidence,
 )
+from .context import (
+    ContextAccessError, ContextContentTrust, ContextInstruction, ContextLimits, ContextMessage,
+    ContextOmission, ContextOmissionReason, ContextPackage, ContextPurpose,
+    ContextReason, ContextRequest, ContextRetrievalService, ContextSource,
+    ContextStatus, ContextTopic, ContextTurn, PostgresContextSource,
+    RelationshipStatus,
+)
 
 __all__ = [
     "ActorType",
@@ -108,4 +115,22 @@ __all__ = [
     "TopicTransitionError",
     "TopicTransitionKind",
     "TopicTransitionRequest",
+    "ContextAccessError",
+    "ContextContentTrust",
+    "ContextInstruction",
+    "ContextLimits",
+    "ContextMessage",
+    "ContextOmission",
+    "ContextOmissionReason",
+    "ContextPackage",
+    "ContextPurpose",
+    "ContextReason",
+    "ContextRequest",
+    "ContextRetrievalService",
+    "ContextSource",
+    "ContextStatus",
+    "ContextTopic",
+    "ContextTurn",
+    "PostgresContextSource",
+    "RelationshipStatus",
 ]

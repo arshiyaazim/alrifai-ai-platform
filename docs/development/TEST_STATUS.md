@@ -1,5 +1,35 @@
 # Test Status
 
+## C6 fresh qualification for authorized checkpoint (2026-09-22, Asia/Dhaka)
+
+| Scope | Actual result | Notes |
+|---|---:|---|
+| C6 focused unit tests | PASSED — 25 | `tests/test_conversation_context.py -q`. |
+| C1–C5/C6 PostgreSQL integration subset | PASSED — 15 | Fresh task-created disposable PostgreSQL 17, loopback-only; included C6 relationship-status correction and C1–C5 conversation/identity/instruction/topic integration tests. |
+| Migration chain/schema check | PASSED | Initial identity schema plus V006–V009 applied to the disposable database; required canonical tables verified. No C6 migration, so C6 up/down/reapply was NOT REQUIRED. |
+| DB-enabled broad repository regression | PASSED — 122 | `pytest -q --ignore=tests/integration/test_web_auth_postgres.py` against fresh disposable PG17. The protected seeded-Owner safety fixture was deliberately excluded, not weakened or bypassed. |
+| Full repository suite, no DB target | PASSED — 107; SKIPPED — 20 | `PYTHONPATH=src .venv/Scripts/python.exe -m pytest -q`; skips are environment-gated and are not passes. |
+| Compile/import | PASSED | `.venv/Scripts/python.exe -m compileall -q src/alrifai/conversations`. |
+| Diff check | PASSED | `git diff --check`; only Git line-ending normalization warnings were emitted. |
+| Secret scan | PASSED | All 14 intended C6 files scanned for private-key, AWS/GitHub/OpenAI token and credential-bearing DB URL patterns; no matches (values suppressed). |
+
+Disposable database: task-created PostgreSQL 17 container `alrifai-c6-qual-20260922`, loopback ephemeral binding; removed after the run. Existing local databases/containers, production and VPS were not changed. Previous broad DB-enabled run reported five web-auth fixture safety errors against a seeded Owner target; this run excluded that fixture, and no safety guard was bypassed.
+
+## C1–C6 natural conversation policy alignment — 2026-09-22 (Asia/Dhaka)
+
+| Scope | Actual result | Notes |
+|---|---:|---|
+| Focused C6 + C1–C5 / identity / authorization regression | PASSED — 107; SKIPPED — 15 | Exact selected-module run for conversation, identity, authorization and PG integration; all skipped cases were PostgreSQL-gated because no approved target was configured. |
+| Full repository suite, no DB target | PASSED — 107; SKIPPED — 20 | `PYTHONPATH=src .venv\\\\Scripts\\\\python.exe -m pytest -q`; skips are not passes. |
+| C6 PostgreSQL adapter integration | SKIPPED — 1 | No approved isolated PostgreSQL target configured in this task. No migration was added or applied. |
+| Compile/import | PASSED | `PYTHONPATH=src .venv\\\\Scripts\\\\python.exe -m compileall -q src/alrifai/conversations` after runtime correction. |
+| Diff check | PASSED | `git diff --check`; no whitespace errors. |
+| Secret scan | PASSED | Tracked modifications and untracked files scanned for private-key headers, AWS/GitHub/OpenAI token patterns, and credential-bearing DB URLs; zero hits. |
+
+Disposable test target: newly created `alrifai-c6-qualify-20260922`, PostgreSQL 17, loopback port `51110`, removed after qualification. Existing local containers were untouched. No C6 migration was added, so migration up/down/reapply was NOT REQUIRED. No skipped test is counted as passed.
+
+C6 implementation remains bounded and has no schema change. Current database integration is unverified/skipped for this alignment task; the earlier C6 PG qualification is historical, not rerun here. C7 is NOT STARTED — OWNER APPROVAL REQUIRED.
+
 ## Latest verified C5 run — 2026-09-22
 
 | Scope | Result | Notes |

@@ -1,5 +1,27 @@
 # Agent Handoff
 
+## Current handoff — C6 backup gate then C7 (2026-09-22, Asia/Dhaka)
+
+1. Repository `D:\\apps\\alrifai-ai-platform`, branch `feat/windows-local-dev`; current local HEAD before authorized C6 commit is `c2852a47323b74c92cd56eaa946e319b4f1d0500`. The fresh remote fetch matched that parent. Four unrelated worktree modifications are preserved and excluded: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, `tests/integration/test_web_auth_postgres.py`.
+2. C1–C5 form the remotely backed baseline. C6 is implemented in `src/alrifai/conversations/context.py` and exported by `src/alrifai/conversations/__init__.py`; tests are `tests/test_conversation_context.py` and `tests/integration/test_conversation_context_postgres.py`; no migration. C6 focused unit tests 25 passed; fresh C1–C5/C6 PG subset 15 passed; broad DB-enabled regression excluding protected web-auth fixture 122 passed; no-DB suite 107 passed/20 skipped.
+3. Phase A may selectively commit only the enumerated C6 source, tests, canonical docs/ADR and six continuity files, then push only `feat/windows-local-dev` to verified `origin`. Independently verify remote SHA and tree. Stop if divergence or any Phase A gate fails.
+4. C7 may start only after verified C6 remote backup. Scope: structured Hermes interpretation/extraction from bounded C6 context; no Recruitment Knowledge Hub, C8 dispatch, C9 natural reply generation/outbound, channel sending, production/VPS change, or C7 commit/push.
+5. Preserve Employee ID as the designated normalized Bangladesh mobile, 11 digits beginning `0`; relationship evidence only controls tone and never grants authority. Unknown/applicant/pre-join cases default to `আপনি`; confirmed active Employee may use `তুমি`.
+6. Missing approved Recruitment knowledge source and exact office-address confirmation remain open; do not invent salary, role, document or location facts. The two address descriptions remain unresolved.
+7. No migration was introduced for C6; C6 DB tests used only a task-created disposable loopback PostgreSQL 17 target, which was removed. The previous seeded-Owner web-auth guard was not bypassed; the broad DB suite excludes that fixture.
+8. Read `AGENTS.md`, the final Conversations spec, architecture/identity/data docs, cross-server contracts and all six continuity files; inspect actual C6 diff/status before continuing. No C8/C9 or production action.
+
+## Previous handoff — C1–C6 policy alignment (2026-09-22, Asia/Dhaka)
+
+1. Repository `D:\\apps\\alrifai-ai-platform`, branch `feat/windows-local-dev`; HEAD `c2852a47323b74c92cd56eaa946e319b4f1d0500`. This SHA remains the verified C1–C5 remote baseline; C6 and policy-alignment work are local-only, uncommitted and unpushed.
+2. C1–C5 are accepted. C6 bounded context retrieval is implemented in `src/alrifai/conversations/context.py`, exported from `src/alrifai/conversations/__init__.py`; tests are `tests/test_conversation_context.py` and `tests/integration/test_conversation_context_postgres.py`. No migration.
+3. C6 is read-only over canonical C1–C5 history/turn/topic/instruction owners. It requires central `MANAGE_CONVERSATIONS`; validates exact channel/account and resolved private Person scope before message/topic/instruction reads; group/public remain in their exact shared thread. Closed topics are not reopened; historical context is purpose-limited. No semantic interpretation, Hermes, mutation, reply generation or outbound sending.
+4. Current no-DB full suite: 107 passed, 20 skipped; selected C1–C6/identity/auth regression: 107 passed, 15 PostgreSQL-gated skipped. This task did not run PostgreSQL qualification. Compile passed; final diff and secret scans are recorded in `TEST_STATUS.md`/manifest.
+5. No migration/persistence; task-created disposable PostgreSQL 17 target was removed. Existing databases, frozen auth, VPS and production were untouched. Employee ID remains the designated normalized Bangladesh mobile, 11 digits beginning `0`.
+6. Preserve four unrelated owner edits exactly: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, `tests/integration/test_web_auth_postgres.py`.
+7. Policy: knowledge examples are illustrative; facts are immutable in meaning; goals are non-linear. C6 provides active Employee relationship evidence for tone only. Default “আপনি” unless verified current Employee evidence supports “তুমি”. Recruitment knowledge source is absent and exact office display needs Owner confirmation. No credentials added.
+8. C7 spec is prepared; C7 runtime is NOT STARTED — OWNER APPROVAL REQUIRED. Next session: read AGENTS, all six continuity files, canonical specs/contracts; inspect status and C6 diff; preserve the four unrelated files. No C6 remote backup; do not start C7 absent approval.
+
 ## Latest handoff — 2026-09-22 (C5 checkpoint)
 
 1. **Project/branch:** `D:\apps\alrifai-ai-platform`, `feat/windows-local-dev`; HEAD `5859bb178738346d6e5cb8ff41e6247495944b92`.

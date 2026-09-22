@@ -1,5 +1,21 @@
 # Active Development Task
 
+## Current authorized task — C7 (gated on C6 backup) (2026-09-22)
+
+Phase A is C6 qualification and authorized checkpoint backup. C6 unit 25 passed; disposable PostgreSQL 17 integration subset 15 passed; broad DB-enabled suite excluding protected seeded-Owner web-auth fixture 122 passed; full no-DB suite 107 passed/20 skipped. No C6 migration. Remote fetch matched parent `c2852a47323b74c92cd56eaa946e319b4f1d0500` before the checkpoint. C7 must begin only after the C6 checkpoint commit is pushed and remote HEAD/tree are independently verified. No C7 changes are part of the C6 commit.
+
+Phase B, if the Phase A hard gate passes: implement and qualify C7 Hermes Interpretation and Extraction only. Do not build the Recruitment Knowledge Hub; do not implement C8 dispatch, C9 reply generation/outbound delivery, or channel sending. Preserve missing Recruitment knowledge and unconfirmed office address as explicit gaps. C7 is not remotely backed up and must remain uncommitted/unpushed.
+
+**Next task:** C7 — Hermes Interpretation and Extraction, authorized by Owner but only after Phase A remote backup verification.
+
+## Previous task checkpoint — C1–C6 policy alignment (2026-09-22)
+
+C1–C6 remain local C6 baseline plus bounded policy alignment; no commit/push. The C6 package now includes positive active-Employee relationship evidence for tone only; all uncertain/applicant/pre-join/inactive cases default to respectful `আপনি`. Canonical specs document authoritative-fact vs guidance/style/example/historical distinction and non-rigid natural conversation. C7 implementation-ready specification is updated but runtime is NOT STARTED — OWNER APPROVAL REQUIRED. Missing Recruitment knowledge source and office-address confirmation are recorded in `BLOCKERS.md`.
+
+**Next proposed task:** C7 — Hermes Interpretation and Extraction.
+
+**C7 status:** NOT STARTED — OWNER APPROVAL REQUIRED.
+
 ## Latest checkpoint — 2026-09-22
 
 **Current status:** C5 — Versioned Admin/Owner AI Instruction State and Selection is implemented and locally qualified. C5 work is uncommitted; do not commit or push without separate Owner authorization. The C1–C4 accepted baseline remains backed up at `5859bb178738346d6e5cb8ff41e6247495944b92`.

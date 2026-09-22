@@ -1,5 +1,30 @@
 # AL-RIFAI Current State
 
+## Current verified checkpoint — C6 qualification (2026-09-22, Asia/Dhaka)
+
+Repository `D:\\apps\\alrifai-ai-platform`; branch `feat/windows-local-dev`; HEAD before checkpoint commit `c2852a47323b74c92cd56eaa946e319b4f1d0500`. C1–C5 are remotely backed up at that baseline; C6 changes are the reviewed local delta pending the authorized commit/push. C6 focused unit tests: 25 passed; C1–C5/C6 PostgreSQL integration subset on a task-created disposable loopback PostgreSQL 17: 15 passed; DB-enabled regression excluding the protected web-auth fixture: 122 passed; no-DB full suite: 107 passed, 20 skipped. No migration was added. C7 has not started; C7 implementation is Owner-authorized only after independent C6 remote backup verification.
+
+- C6 is bounded, read-only retrieval over C1–C5 canonical message, identity, turn, topic, and instruction owners. Active-Employee relationship evidence is tone-only; it grants no authority and does not mutate Employee ID.
+- C6 checkpoint files: `MCP-Servers/CROSS_SERVER_CONTRACTS.md`; `MCP-Servers/conversations-ai/FINAL_IMPLEMENTATION_SPEC.md`; `MCP-Servers/recruitment/FINAL_IMPLEMENTATION_SPEC.md`; `docs/architecture/ARCHITECTURE_DECISIONS.md`; `src/alrifai/conversations/__init__.py`; `src/alrifai/conversations/context.py`; `tests/test_conversation_context.py`; `tests/integration/test_conversation_context_postgres.py`; and the six development continuity files.
+- Four unrelated owner modifications remain excluded from the C6 checkpoint: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, `tests/integration/test_web_auth_postgres.py`.
+- C6 regression excluded `tests/integration/test_web_auth_postgres.py` because the existing fixture safety guard rejects the seeded Owner DB; no guard was bypassed. DB-enabled excluded-fixture suite passed 122 tests. Full no-DB run passed 107 with 20 DB-gated skips.
+- Recruitment knowledge corpus/current role-salary-document facts remain absent; exact office address remains unconfirmed between the two existing descriptions. Do not invent or communicate either as verified.
+- Employee ID remains the designated normalized Bangladesh mobile, canonical 11 digits beginning `0`; UUIDs are technical keys only. C6 does not mutate it.
+- No VPS, production/preserved database, frozen authentication, Hermes runtime, or channel changes.
+
+## Authoritative previous checkpoint — C1–C6 natural conversation alignment (2026-09-22, Asia/Dhaka)
+
+Repository `D:\\apps\\alrifai-ai-platform`; branch `feat/windows-local-dev`; HEAD `c2852a47323b74c92cd56eaa946e319b4f1d0500`. This is the remotely verified C1–C5 checkpoint (`origin/feat/windows-local-dev` matched before C6). C6 bounded context retrieval is implemented locally, uncommitted and unpushed; it has no remote backup. Older checkpoint passages below are historical where they conflict with this entry.
+
+- C1–C5: accepted baseline, included in the checkpoint SHA above.
+- C6: read-only bounded retrieval in `src/alrifai/conversations/context.py`; additionally exports C2-confirmed `CONFIRMED_CURRENT_EMPLOYEE` relationship evidence only for tone; otherwise `UNKNOWN`. No migration or duplicate context store. Current no-DB full suite: 107 passed, 20 DB-gated skipped; 15 relevant PostgreSQL tests skipped without a qualified target in this task. See `TEST_STATUS.md`.
+- C7: implementation-ready specification prepared in `MCP-Servers/conversations-ai/FINAL_IMPLEMENTATION_SPEC.md`; runtime NOT STARTED — OWNER APPROVAL REQUIRED.
+- Owner conversation policy: knowledge references are classified by authority; examples are illustrative, not prescriptive; facts remain exact; recruitment goals/progression are non-rigid; use `আপনি` except where C2/C6 positively confirms the current sender is an active Employee, then `তুমি` is allowed.
+- Canonical Recruitment knowledge corpus/service and exact office address are absent. Owner confirmation is needed to resolve “AK Khan Mor, Pahartali, Chattogram” versus “AK Khan Mor, Victoria No. 1 Gate”; neither is treated as verified.
+- Employee ID remains the designated normalized Bangladesh mobile, 11 digits beginning `0`; UUIDs are technical keys only. C6 cannot mutate it.
+- Four unrelated modifications preserved: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, `tests/integration/test_web_auth_postgres.py`.
+- No VPS, production/preserved database, auth baseline, Hermes runtime, or channel change. This task added no migration and did not run against PostgreSQL.
+
 ## Latest verified checkpoint — 2026-09-22
 
 Repository root `D:\apps\alrifai-ai-platform`; branch `feat/windows-local-dev`; current HEAD `5859bb178738346d6e5cb8ff41e6247495944b92` (accepted C1–C4 remote checkpoint). C5 changes below are uncommitted and have no remote backup. Four unrelated pre-existing modifications remain preserved: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, and `tests/integration/test_web_auth_postgres.py`.

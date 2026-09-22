@@ -32,6 +32,14 @@ Evaluate trusted issuer, central `MANAGE_CONVERSATIONS` authorization, lifecycle
 
 Implemented in `src/alrifai/conversations/instructions.py`, persisted in V009. C5 does not implement semantic classification, Hermes, dispatch, or reply generation.
 
+### ADR-011 — Natural conversation, knowledge authority, and relationship-aware address
+
+**Status:** Accepted by explicit Owner policy; C1–C6 alignment recorded, C7 not started.
+
+Business facts and mandatory rules retain canonical authority; operational and style guidance are adaptable; conversation examples are illustrative, not prescriptive; historical/superseded material is not current. Flexible wording and goal-oriented conversation do not permit changes to verified amounts, hours, dates, addresses, eligibility or protected decisions. C7 interprets/extracts evidence; C8/domain services provide authorized business reads and mutations; C9 generates/delivers the final response. No stage may turn a candidate claim or example into verified policy or a protected decision.
+
+Use respectful “আপনি” for unknown people, Applicants and selected-but-not-joined candidates. “তুমি” is permitted only for a C2-resolved Person with C6 evidence of a matching canonical active Employee record. Otherwise default to “আপনি”. The relationship signal is for tone, not authorization and not Employee-ID mutation. A canonical approved recruitment knowledge source and exact office-address display remain prerequisites for communicating those values as facts.
+
 ## Open decisions
 
 ### ADR-004 — AL-RIFAI authentication and authorization

@@ -1,6 +1,6 @@
 # Conversations & AI MCP — Final Implementation Specification
 
-**Status:** Specification only; runtime implementation is not authorized by this document.
+**Status:** Canonical staged implementation specification. C1–C5 are accepted baselines; C6 is implemented locally and uncommitted/unpushed. Later stages require explicit Owner authorization.
 **Owner:** Communications / AI
 **Server count:** One consolidated Conversations & AI MCP. Channels, Hermes, topics, message storage, and Admin AI instructions are capabilities of this server, not separate MCP servers.
 
@@ -150,7 +150,7 @@ Free-text instructions guide communication only. They cannot authorize writes, o
 
 ## 11. Hermes and structured extraction boundary
 
-Hermes is a replaceable interpretation/extraction/reply adapter. It may classify likely domain/topic, retrieve context, detect missing information, produce structured extraction, propose tool calls, and draft replies. It is not canonical identity, authorization, persistence, payment, payroll, hiring, Employee-ID, roster, or business-rule authority.
+Hermes is a replaceable interpretation/extraction adapter for C7 and a separate response-generation capability in C9. C7 may interpret, extract structured evidence, detect missing information, and propose domain-read needs; it does not retrieve context itself, draft final replies, or execute tools. C9 owns natural-language reply generation and outbound orchestration. Hermes is not canonical identity, authorization, persistence, payment, payroll, hiring, Employee-ID, roster, or business-rule authority.
 
 Structured extraction must include schema version, fields, confidence, evidence references, source message IDs, subject identity, missing/ambiguous fields, and model/provider metadata. Unstructured prose is never sent directly to a privileged mutation API. Domain services validate all extracted values and capabilities.
 
@@ -262,8 +262,8 @@ Future sequence:
 | C3 | Ordered history and burst/turn aggregation | ordering, late continuation, reply-boundary tests; disable aggregation | shadow |
 | C4 | Topic state, closure, switching, repetition | lifecycle and contamination tests; disable topic writes | shadow |
 | C5 | Versioned Admin/Owner instruction state and selection | trusted lifecycle, scoped deterministic selection, Owner-over-Admin same-subject conflict precedence, audit/evidence, expiry/supersession tests | implemented locally; no remote backup |
-| C6 | Bounded semantic retrieval/context composer | relevance, stale exclusion, sensitive-scope tests; revert to minimal context | draft-only |
-| C7 | Hermes/provider adapter and structured extraction | semantic corpus, timeout, confidence/evidence tests; disable provider | draft-only |
+| C6 | Bounded, authorized context retrieval over canonical messages, turns, topics, and instructions | scope/privacy, evidence, bounds, stale exclusion and reconstruction tests; revert to minimal context | implemented locally; read-only; uncommitted/unpushed |
+| C7 | Structured semantic interpretation and extraction through an approved routing adapter; no final reply | Bangla/Banglish/misspelling/context, grounding, uncertainty, privacy, injection, decision-boundary tests; disable interpreter | NOT STARTED; implementation-ready specification below; Owner approval required |
 | C8 | Domain dispatch contracts | authorization, schema, idempotency, failure tests; stop dispatch | no writes |
 | C9 | Reply and outbound orchestration | approval, duplicate, delivery evidence tests; stop outbound | draft/approval |
 | C10 | Audit, observability, recovery/reprocessing | trace, retry, redaction, recovery tests; disable workers | shadow |
@@ -280,14 +280,75 @@ No C3 turn table or migration is required. A turn is deterministically identifie
 
 C4 is implemented in `src/alrifai/conversations/topics.py` as a deterministic topic state machine over typed topic/transition proposals. It persists `conversation_topics` and immutable `conversation_topic_transitions` through V008 so state and history survive restart. Valid transitions, optimistic state versions, scoped idempotency, closure evidence, explicit reopening evidence, conversation scope, and C3 late-arrival conflicts are validated without semantic classification.
 
-C4 does not classify natural language, select Admin instructions, call Hermes, retrieve semantic history, generate replies, dispatch domain actions, or send outbound messages. C5 adds instruction state/selection only. C6 and later stages remain unimplemented and require separate Owner approval.
+C4 does not classify natural language, select Admin instructions, call Hermes, retrieve semantic history, generate replies, dispatch domain actions, or send outbound messages. C5 adds instruction state/selection only. C6 implementation is recorded below; C7 and later remain unimplemented and require separate Owner approval.
 
 ### C5 implementation decision
 
-C5 is implemented in `src/alrifai/conversations/instructions.py`. V009 persists immutable instruction versions and append-only created/activated/revoked/superseded events, enforces canonical conversation/topic scope and links audit events to the trusted principal. PostgreSQL qualification covers V009 up/down/reapply and restart reconstruction. Owner precedence applies only to conflicting instructions on the same subject; it never cancels unrelated Admin guidance and never authorizes domain mutations. C6 remains unimplemented.
+C5 is implemented in `src/alrifai/conversations/instructions.py`. V009 persists immutable instruction versions and append-only created/activated/revoked/superseded events, enforces canonical conversation/topic scope and links audit events to the trusted principal. PostgreSQL qualification covers V009 up/down/reapply and restart reconstruction. Owner precedence applies only to conflicting instructions on the same subject; it never cancels unrelated Admin guidance and never authorizes domain mutations.
+
+### C6 implementation decision — bounded context retrieval
+
+C6 is implemented locally in `src/alrifai/conversations/context.py` as a read-only composer over canonical C1 messages, C2 identity/conversation resolution, C3 ordered turns, C4 topic state, and C5 instruction selection. It creates no competing history store and no migration. The PostgreSQL adapter reads existing canonical tables only. Server-enforced defaults are 32 messages, 12 turns, 5 topics, 12,000 context-content characters, 200 candidate records, 90 days of history, reply depth 5, and 8 media references per message; callers cannot raise these limits. Messages and extracted text remain untrusted conversation data with source/order evidence and provenance.
+
+Retrieval requires central `MANAGE_CONVERSATIONS` authorization and exact channel/account/conversation scope. Before any message, topic, or instruction reads, private retrieval requires a resolved C2 Person matching the private conversation's Person; unresolved, ambiguous, mismatched, or unlinked private identity fails closed. Group/public requests remain confined to their exact shared thread and never inherit private Person history. Topic references are validated against conversation/channel/account/scope before associated evidence is read. Closed-topic evidence is omitted from ordinary active context; historical retrieval may return it only for an explicit authorized historical purpose and does not reopen the topic. Closed-topic guidance is not selected as current. The current C3 turn is checked against canonical message membership/order. Missing context returns explicit insufficiency/omission evidence; no facts are fabricated.
+
+C6 does not classify meaning, perform lexical routing, call Hermes, author instructions, dispatch domains, mutate protected state, generate replies, or send outbound messages. It preserves reply/prior-answer references, C3 ordering/late-arrival evidence, C4 state, and C5 selection provenance for C7. Retrieval is deterministic/read-only. Qualification used a disposable loopback PostgreSQL 17 target for adapter integration; no schema migration or context persistence was introduced. C6 remains local-only, uncommitted and unpushed.
 
 No stage may begin automatically because the preserved C1 files exist. Each later stage remains blocked until the Owner explicitly approves it and the listed prerequisites are satisfied.
 
 ## 20. Definition of ready
 
-This specification remains the authority for staged implementation. C1–C4 are accepted baselines; C5 is implemented and locally qualified within its approved scope. C6 and later stages remain unimplemented and require explicit Owner approval.
+This specification remains the authority for staged implementation. C1–C5 are accepted and backed up at `c2852a47323b74c92cd56eaa946e319b4f1d0500`. C6 is implemented locally; focused and isolated PostgreSQL checks passed. The DB-enabled broad suite had unrelated auth-fixture errors against the seeded Owner database, documented in continuity. C6 is uncommitted/unpushed. C7 is NOT STARTED and requires explicit Owner approval.
+
+### C6-to-C7 relationship evidence correction
+
+C6 now includes `relationship_status` and `relationship_evidence` in its bounded context package. It returns `CONFIRMED_CURRENT_EMPLOYEE` only when C2 resolves the same Person and its unique employee candidate has canonical status `active`; group/public requests additionally require the resolved Person to match a sender on the current inbound turn. All other cases return `UNKNOWN`. C7/C9 use the respectful default **“আপনি”** unless this positive evidence is present; identity familiarity, applicant history, self-claim, or pre-join selection never authorizes **“তুমি”**. This evidence is for tone only, not authorization. C6 does not currently expose a verified Applicant/selected-pre-join state.
+
+### C7 — implementation-ready semantic interpretation and extraction contract
+
+**Boundary:** C7 interprets the C6 bounded context and produces evidence-linked structured hypotheses. It does not author final replies (C9), retrieve arbitrary documents/history (C6/domain read services), select/reject/hire candidates, decide eligibility, mutate any domain, dispatch writes (C8), schedule notifications, or send messages. It must not turn a proposed intent, confidence, or extracted claim into authorization.
+
+**Input:** one C6 `ContextPackage` for one authorized conversation turn, including ordered current-turn messages, C3 timing/reply/late-arrival evidence, C4 topic/state references, applicable C5 instruction versions, trust classifications, and—only when available through an authorized canonical read contract—domain facts and their provenance. External message/media-derived content remains untrusted. C7 must not enlarge context limits or bypass C6 scope.
+
+**Interpretation output (versioned structured result):**
+
+| Field | Contract |
+|---|---|
+| `status` | `interpreted`, `needs_clarification`, `insufficient_context`, or `abstained`; uncertainty is explicit. |
+| `language_evidence` | Observed language/mix and uncertainty; supports Bangla, Banglish, English, colloquial forms, spelling variants, fragments and incomplete messages without rewriting source text. |
+| `intent_hypotheses` | Zero or more ranked, non-authoritative intent/domain/topic hypotheses with confidence and supporting message/turn IDs. No keyword-only result may be represented as fact. |
+| `subject_references` | Sender/known Person/third-party mention candidates, canonical reference only when trusted evidence resolves it, otherwise `unresolved`/clarification required. Never assume a mentioned relative is the sender. |
+| `extracted_claims` | Typed candidate statements/facts with value, `unknown|provided|candidate_claimed|staff_reviewed|verified` evidence state, source references, confidence and extractor/schema version. A claim is not a verified fact. |
+| `missing_information` | Fields missing relative to an explicitly supplied canonical role/workflow requirement set; absent requirements mean “not assessed,” not “missing.” |
+| `goal_evidence` | Flexible current user goal and optional next-step candidates grounded in current/relevant turns. This is a hypothesis, not a mandatory dialogue state or linear Recruitment workflow. |
+| `topic_association` | C4 topic reference or typed association proposal plus evidence; C7 does not transition, close, or reopen topics. A closed topic is only resumed after a new user event and a later authorized C4 transition. |
+| `prior_answer_evidence` | Relevant prior outbound message/turn IDs; no semantic duplicate-question claim unless the later approved capability supplies that determination. |
+| `address_form` | `respectful_apni` by default; `familiar_tumi` only with C6 `CONFIRMED_CURRENT_EMPLOYEE` evidence for the resolved current sender. Include evidence reference. |
+| `grounding` | References classified by the authority model below; preserve source/version/currentness and conflicts. C7 must not manufacture missing sources or values. |
+| `required_domain_reads` | Typed read needs for C8/canonical services, such as current role conditions or application status; no writes or tool execution by C7. |
+| `clarification_or_escalation` | Minimal clarification or human-review reason when subject, identity, source authority, missing policy or protected decision is unresolved. |
+
+Do not expose hidden chain-of-thought. Return concise decision/evidence summaries, not private reasoning traces. Preserve original messages and media references; never transform media receipt into document verification.
+
+**Knowledge authority and use:**
+
+| Class | How C7 treats it |
+|---|---|
+| Authoritative business fact | Current approved canonical source value (for example salary range, hours, address, role condition). Preserve exact amount/value/unit/version; may be summarized in C9 but never numerically altered. Missing, stale or conflicting source means unknown/escalate. |
+| Mandatory business rule | Enforce only when explicitly designated by authorized canonical policy/legal/approval contract. An example or tone instruction cannot promote itself to mandatory. |
+| Flexible operational guidance | Helpful, defeasible advice; may be adapted to the person and context but cannot override a mandatory rule or promise approval. |
+| Conversation style guidance | Tone/address/clarity guidance; flexible expression, subordinate to verified relationship and safety/policy. |
+| Illustrative example | Demonstrates possible meaning or conversation only. Never an exact-match trigger, required sentence, fixed dialogue tree, or policy source. |
+| Historical/superseded material | Historical evidence only; not current facts or rules unless the authorized source explicitly marks it applicable. |
+
+**Natural conversation policy:** “Examples are illustrative, not prescriptive.” Meaning and required facts remain faithful, while wording, length, question form and progression may vary naturally. Do not implement percentage similarity thresholds, fixed scripts, keyword-to-reply rules, or an obligatory closing question. Understand the full C3 turn and relevant C6 context, including multi-message references, corrections, topic switches, declines and returns. A Recruitment goal is a helpful, non-linear guide: accept out-of-order information, do not repeatedly ask for known trusted facts, do not push after decline/topic change, and offer a relevant next step only when useful.
+
+If a candidate lacks a document, C7 must not infer rejection. It may identify the missing requirement and request approved alternatives through a C8 read or escalate when an alternative needs staff approval. Do not waive an explicitly mandatory legal/protected requirement or promise hiring. Joining-preparation advice and combining visits are optional operational guidance only when current approved Recruitment policy permits it; illustrative document lists are not universal requirements. Candidate interest/readiness is not selection. A selection notification can be stated only after canonical Recruitment returns an authorized selection decision; the Owner's “around two hours” example is not a default timer. C7 never selects, schedules or sends that notification.
+
+**Routing/provider constraints:** C7 uses a replaceable interpretation interface behind the existing approved model-routing architecture (9Router/OmniRoute where configured). Do not hard-code a provider/model or bypass the approved router. Provider failure, timeout, malformed output, unsupported language, or low-confidence material fact returns typed insufficiency/clarification; no business mutation follows. No live service, route, model or credential changes are part of C7 specification or this task.
+
+**C7 tests required before implementation acceptance:** semantic multi-turn Bangla/Banglish/misspelling and incomplete fragments; cross-turn references and correction handling; subject ambiguity; exact preservation of salary/fees/hours/address facts; source authority classification and example non-promotion; missing policy stays unknown; missing document does not trigger automatic rejection; no mandatory question/script; respectful address default and active-employee-only familiar address; closed topic not reopened; refusal/decline and topic change respected; no unsupported applicant selection or two-hour notification; prompt injection remains untrusted; no cross-Person/group/public leakage; no protected mutation/tool dispatch; timeout/malformed/low-confidence fail safely; deterministic versioned output and evidence references.
+
+**Prerequisites/open source gaps:** no approved Recruitment knowledge corpus/service or concrete role/salary/document policy records were found in the current repository. Recruitment specification already identifies the canonical Role/policy source as an implementation prerequisite. C7 must emit `required_domain_reads`/unknown until that authorized read source exists; do not add a knowledge store inside Conversations. No canonical office address was found in repository search. The Owner must confirm whether “AK Khan Mor, Pahartali, Chattogram” and “AK Khan Mor, Victoria No. 1 Gate” are the same location and provide the exact approved display address before either is communicated as a fact.
+
+`C7` remains NOT STARTED. This contract is implementation-ready, but Owner approval is required before C7 work begins.
