@@ -1,4 +1,6 @@
-# Session Handoff
+# Historical Session Handoff
+
+> Current continuity authority is [`docs/development/AGENT_HANDOFF.md`](development/AGENT_HANDOFF.md), together with `CURRENT_STATE.md`, `ACTIVE_TASK.md`, `BLOCKERS.md`, and `docs/architecture/MASTER_ARCHITECTURE.md`. This document is retained as historical project context.
 
 **Last Completed Phase:** GitHub repository, local development, and VPS deployment audit
 **Current Commits:**

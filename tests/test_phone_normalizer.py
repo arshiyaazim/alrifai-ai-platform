@@ -4,37 +4,38 @@ Tests the canonical Bangladeshi phone normalization logic.
 Provenance: Fazle-Core phone_normalizer module
 """
 
-def normalize_phone(raw: str) -> str:
-    """Normalize Bangladeshi phone to +880XXXXXXXXX format."""
-    digits = ''.join(c for c in raw if c.isdigit())
-    if len(digits) == 11 and digits.startswith('0'):
-        return '+88' + digits
-    elif len(digits) == 13 and digits.startswith('880'):
-        return '+' + digits
-    return raw
+from src.alrifai.identity.phone_normalizer import normalize_phone
 
 
 def test_normalize_with_leading_zero():
-    assert normalize_phone("01712345678") == "+8801712345678"
+    assert normalize_phone("01712345678") == "01712345678"
 
 
 def test_normalize_with_country_code():
-    assert normalize_phone("8801712345678") == "+8801712345678"
+    assert normalize_phone("8801712345678") == "01712345678"
 
 
 def test_normalize_already_formatted():
-    assert normalize_phone("+8801712345678") == "+8801712345678"
+    assert normalize_phone("+8801712345678") == "01712345678"
 
 
 def test_preserves_raw():
     """Raw value preserved alongside normalized."""
     raw = "01712345678"
-    assert normalize_phone(raw) == "+8801712345678"
+    assert normalize_phone(raw) == "01712345678"
 
 
 def test_whitespace_stripped():
-    assert normalize_phone(" 01712345678 ") == "+8801712345678"
+    assert normalize_phone(" 01712345678 ") == "01712345678"
 
 
 def test_dashes_stripped():
-    assert normalize_phone("017-1234-5678") == "+8801712345678"
+    assert normalize_phone("017-1234-5678") == "01712345678"
+
+
+def test_normalize_with_double_country_code():
+    assert normalize_phone("008801712345678") == "01712345678"
+
+
+def test_unsupported_input_is_preserved():
+    assert normalize_phone("not-a-phone") == "not-a-phone"

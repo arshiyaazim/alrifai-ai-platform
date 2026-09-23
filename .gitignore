@@ -46,6 +46,7 @@ docker-compose.override.yml
 # OS
 .DS_Store
 Thumbs.db
+nul
 
 # Logs
 *.log
@@ -68,3 +69,6 @@ npm-debug.log*
 
 # OpenWebUI data (runtime)
 open-webui-data/
+
+# Local development data (Windows)
+.local-data/

@@ -1,4 +1,6 @@
-# Implementation Status
+# Historical Implementation Status
+
+> Current continuity status is maintained in [`docs/development/CURRENT_STATE.md`](development/CURRENT_STATE.md), [`docs/development/TEST_STATUS.md`](development/TEST_STATUS.md), and [`docs/development/AGENT_HANDOFF.md`](development/AGENT_HANDOFF.md). The table below is retained as historical Phase 1–11 planning evidence and must not override current repository verification.
 
 | Component | Status | Phase |
 |---|---|---|

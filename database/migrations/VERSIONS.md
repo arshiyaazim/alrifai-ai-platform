@@ -11,3 +11,28 @@ Each migration has:
 - Up SQL
 - Down SQL (rollback where supported)
 - Provenance tracking
+
+`V006__authentication.sql` adds trusted principals, Argon2id credentials,
+server sessions, roles, password resets, and authentication audit attribution.
+It is approved only for the isolated local development database.
+
+`V007__conversations_identity.sql` adds the unified conversation/thread and
+canonical-message relationship foundation plus source-account-scoped platform
+identity uniqueness for C2. It is approved only for the isolated local
+development database; it does not activate channels or Hermes.
+
+`V008__conversation_topics.sql` adds restart-safe C4 topic state and immutable
+topic transition history. It is approved only for isolated local qualification;
+it does not implement semantic classification, Hermes, or outbound behavior.
+
+`V009__conversation_ai_instructions.sql` adds immutable, versioned C5 Owner/Admin
+instruction records and append-only lifecycle evidence with canonical audit
+attribution. It references V007 conversations and V008 topics and enforces
+topic-to-conversation scope. Approved only for isolated local qualification.
+
+`V010__ai_runtime_config.sql` adds the canonical AI gateway registry
+(`ai_gateway_configs`) and the singleton active-gateway reference
+(`ai_runtime_state`) consumed by the AI runtime service and the C7
+interpretation adapter. Secrets are never stored; rows carry only a
+server-side `secret_ref`. Approved only for isolated local qualification;
+do not apply to the existing VPS database without separate owner approval.

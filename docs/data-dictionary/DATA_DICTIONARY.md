@@ -5,12 +5,23 @@
 
 Each field has a single, unambiguous meaning across the entire platform.
 
+## C5 conversation instruction persistence
+
+| Table | Purpose | Ownership |
+|---|---|---|
+| `conversation_ai_instruction_versions` | Immutable Owner/Admin instruction content, subject, version, issuer, applicability scope, priority, effective/expiry times, supersession, correlation, idempotency, and provenance. Typed conversation/topic scope references preserve C2/C4 boundaries. | Conversations & AI C5; V009 |
+| `conversation_ai_instruction_events` | Append-only create/activate/revoke/supersede lifecycle evidence, trusted acting principal, timestamps, idempotency, correlation, and reason. | Conversations & AI C5; V009 |
+
+Lifecycle writes also use the existing canonical `audit_log`; these tables are not an authorization or domain-policy store. Owner precedence applies only to conflicting instructions on the same subject.
+
 ---
 
 ## Naming Convention Rules
 
+Owner Employee-ID correction: `person_id` is the internal Person UUID. The authoritative business Employee ID is `employee_business_id`, the designated normalized Bangladeshi mobile (final 11 digits beginning with `0`). A physical UUID employee-record key, if retained, is technical only.
+
 - `person_id` means exactly one thing everywhere (immutable UUID)
-- `employee_id` means exactly one thing everywhere (UUID → persons)
+- `employee_id` physical UUID columns, where present, are internal employee-record keys only; they are not the business Employee ID
 - `applicant_id` means exactly one thing everywhere
 - Do not reuse the same name for different concepts
 - Do not use different names for the same concept without explicit mapping
@@ -42,13 +53,25 @@ Each field has a single, unambiguous meaning across the entire platform.
 - **Privacy:** Internal
 - **Mutable:** NO (once assigned)
 
+### employee_business_id
+- **Display:** Employee ID
+- **Domain:** Workforce / Employee
+- **Type:** TEXT
+- **Nullable:** NO for an active Employee
+- **Unique:** YES after Bangladesh normalization
+- **Canonical Format:** final 11 digits beginning with `0` (`01XXXXXXXXX`)
+- **Meaning:** Authoritative business Employee identifier; designated normalized mobile number
+- **Source:** Explicit authorized hire/handoff or `Edit Employee ID` workflow
+- **Mutable:** Only through explicit authorized edit; prior values remain historical aliases
+- **Note:** Contact/messaging numbers do not automatically change this value.
+
 ### phone_normalized
 - **Display:** Phone (Normalized)
 - **Domain:** Identity
 - **Type:** TEXT
 - **Nullable:** YES
-- **Canonical Format:** `+880XXXXXXXXX` (Bangladeshi E.164)
-- **Meaning:** Canonical normalized phone number for contact
+- **Canonical Format:** final 11 digits beginning with `0` (`01XXXXXXXXX`)
+- **Meaning:** Canonical normalized Bangladesh mobile comparison value for contact and identity evidence
 - **Source:** phone_normalizer library
 - **Privacy:** PII — restricted access
 - **Mutable:** YES (via update process)
@@ -80,9 +103,10 @@ Each field has a single, unambiguous meaning across the entire platform.
 ### employees
 | Field | Type | Nullable | Unique | Meaning |
 |---|---|---|---|---|
-| employee_id | UUID | NO | YES | PK |
+| employee_id | UUID | NO | YES | Physical internal employee-record key; not the business Employee ID |
 | person_id | UUID | NO | — | FK to persons |
 | employee_code | TEXT | NO | YES | Human-readable code |
+| employee_business_id | TEXT | NO | YES | Authoritative normalized Bangladesh mobile Employee ID |
 | display_name | TEXT | NO | — | Preferred display name |
 | designation | TEXT | YES | — | Job title |
 | department | TEXT | YES | — | Department |

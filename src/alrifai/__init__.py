@@ -1,0 +1,1 @@
+"""AL-RIFAI application package."""

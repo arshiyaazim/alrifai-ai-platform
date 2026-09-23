@@ -6,7 +6,7 @@
 
 ## Overview
 
-A new, fully independent AI operations platform. Not a migration of chat.iamazim.com. Not a redesign of Fazle-Core. Not a replacement for the existing production application.
+A new, fully independent AI operations platform intended to replace Fazle-Core after safe verification and an approved migration/cutover plan. It has no runtime dependency on the legacy system during development.
 
 ## Quick Start
 
@@ -15,6 +15,41 @@ cp .env.example .env
 # Edit .env with real credentials
 docker compose up -d alrifai-postgres alrifai-open-webui
 ```
+
+## Local AL-RIFAI Web Application
+
+Create or preserve the Git-ignored `.env.local` connection file, then start the
+local web application:
+
+```powershell
+.\scripts\start-alrifai-web.ps1
+```
+
+The launcher loads `.env.local` automatically and verifies the database before
+starting. Never commit `.env.local` or copy it to production.
+
+On the VPS development environment, use the server-side launcher so the
+gitignored repository `.env` is loaded without exporting credentials into the
+agent shell:
+
+```bash
+./scripts/dev-start.sh --reload
+```
+
+It never prints secret values, sends them to the browser, or stores them in
+PostgreSQL. Existing environment variables take precedence.
+
+Open `http://127.0.0.1:8000/`, or use VS Code's Command Palette → **Simple
+Browser: Show**. Bootstrap the approved Owner interactively without putting a
+password in the command line:
+
+```powershell
+.venv\Scripts\python.exe -m src.alrifai.auth.bootstrap_owner
+```
+
+The bootstrap command requires username `azimpolcu`, hides password input, and
+requires a first-login password change. Never use a production or business-data
+database for local development.
 
 ## Access Points
 

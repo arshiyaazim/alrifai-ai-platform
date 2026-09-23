@@ -1,4 +1,7 @@
-# AL-RIFAI AI Operations Platform — Architecture
+# AL-RIFAI AI Operations Platform — Historical Architecture Summary
+
+> Canonical authority: [`docs/architecture/MASTER_ARCHITECTURE.md`](architecture/MASTER_ARCHITECTURE.md).
+> This file is retained as a historical summary and must not be used to override the master architecture constitution.
 
 **Version:** 1.0.0  
 **Status:** DESIGN PHASE — Phase 0 Discovery Complete  

@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "fallbackOrder": [
+    "native-copilot",
+    "9router-general",
+    "poolside-laguna",
+    "ollama",
+    "huggingface"
+  ],
+  "providers": {
+    "native-copilot": {
+      "label": "GitHub Copilot subscription",
+      "type": "native",
+      "status": "verified-local",
+      "model": "auto"
+    },
+    "9router-general": {
+      "label": "9Router general combo",
+      "type": "openai",
+      "status": "verified",
+      "baseUrl": "http://127.0.0.1:20130/v1",
+      "model": "general",
+      "wireApi": "completions",
+      "requiresApiKey": true
+    },
+    "poolside-laguna": {
+      "label": "Poolside Laguna S 2.1 (free)",
+      "type": "openai",
+      "status": "unverified",
+      "baseUrl": "http://127.0.0.1:20130/v1",
+      "model": "openrouter/poolside/laguna-s-2.1:free",
+      "wireApi": "completions",
+      "requiresApiKey": true
+    },
+    "ollama": {
+      "label": "Ollama local",
+      "type": "openai",
+      "status": "unverified",
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "model": "hermes3:3b",
+      "wireApi": "completions",
+      "requiresApiKey": false
+    },
+    "huggingface": {
+      "label": "Hugging Face Inference",
+      "type": "openai",
+      "status": "unverified",
+      "baseUrl": "https://api-inference.huggingface.co/v1",
+      "model": "meta-llama/Llama-3.1-8B-Instruct",
+      "wireApi": "completions",
+      "requiresApiKey": true
+    }
+  }
+}
