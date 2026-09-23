@@ -1,3 +1,12 @@
+## C7 live reliability regression diagnosis — 2026-09-23
+
+- Starting SHA: `6212ccd8d105e03a2efc15b924e0747d210c50a6`; worktree preserved; no reset, clean, stash, commit, push, restart, Docker/provider change, migration, or production action.
+- Environment verified from the host-capable VPS boundary: `9router` remained up with `127.0.0.1:20129->20128/tcp`; health HTTP 200; authenticated `/v1/models` HTTP 200 with 551 models; selected route `nine-general/general`; canonical server-side `.env` loading found the credential without printing it.
+- Root cause: the prior `0/12` run used a qualification-only `timeout_s=3`, `max_attempts=1` override. The earlier 7/12 qualification used the normal 60-second per-attempt budget. No route, prompt, fixture, response-format, or provider-setting regression was found between committed SHA and current code. Sanitized controls under 60 seconds measured successful responses at about 10.5–53.2 seconds; one case timed out at 60 seconds. Authenticated model discovery connection completed in about 1.3 seconds.
+- Controlled Section 24 rerun with `timeout_s=60`, `max_attempts=1`, sequential execution, and retry delay 0: `9 PASS`, `3 SAFE_ABSTAIN`, `0 FAIL`. Safe abstentions: Bangla `malformed_response`; false-authority `malformed_response`; missing-documents `validation_failure`. A direct sanitized probe showed the missing-documents provider response was valid JSON/envelope but had the wrong top-level shape, so the validator correctly rejected it. Provider-envelope malformed categories were rejected before schema validation.
+- Retry policy remains bounded: default two attempts, maximum three, only transient transport/408/429/5xx; no retry for authentication, malformed response, validation failure, protected mutation, or outbound action. No runtime code change was justified by the evidence; the correction is to use the equivalent qualification budget and report provider variability explicitly.
+- C7 remains `PARTIAL`/not live-reliability-complete. Offline safety and regression gates remain valid; C5/C6, C8/C9, database, deployment, and outbound boundaries remain untouched.
+
 # Agent Handoff
 
 ## Reconciled current checkpoint — 2026-09-23

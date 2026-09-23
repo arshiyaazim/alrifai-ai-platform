@@ -183,7 +183,8 @@ def test_unauthorized_gateway_becomes_typed_provider_error():
         result = InterpretationService(_adapter_for(server)).interpret(
             InterpretationRequest(context=package))
     assert result.status is InterpretationStatus.ABSTAINED
-    assert result.failure_reason is FailureReason.PROVIDER_ERROR
+    assert result.failure_reason is FailureReason.AUTHENTICATION
+    assert len(server.requests) == 1
 
 
 def test_provider_outage_becomes_typed_provider_error():
@@ -207,7 +208,8 @@ def test_unreadable_output_becomes_provider_error():
     with FakeGateway(handler) as server:
         result = InterpretationService(_adapter_for(server)).interpret(
             InterpretationRequest(context=package))
-    assert result.failure_reason is FailureReason.PROVIDER_ERROR
+    assert result.failure_reason is FailureReason.MALFORMED_RESPONSE
+    assert len(server.requests) == 1
 
 
 def test_schema_invalid_json_reaches_c7_validation_as_malformed():
@@ -275,3 +277,76 @@ def test_error_text_never_contains_credential():
         result = InterpretationService(_adapter_for(server)).interpret(
             InterpretationRequest(context=package))
     assert SECRET not in (result.uncertainty[0] if result.uncertainty else "")
+
+
+
+def test_transient_failure_recovers_with_one_bounded_retry():
+    package, _, _, _ = context_for()
+    calls = []
+
+    def handler(server, raw):
+        calls.append(1)
+        if len(calls) == 1:
+            _respond(server, 503, {"error": "busy"})
+        else:
+            _respond(server, 200, _c7_envelope(json.dumps(output())))
+
+    with FakeGateway(handler) as server:
+        result = InterpretationService(_adapter_for(server, retry_delay_s=0)).interpret(
+            InterpretationRequest(context=package))
+    assert result.status is InterpretationStatus.INTERPRETED
+    assert len(server.requests) == 2
+
+
+def test_retry_exhaustion_is_bounded_and_typed():
+    package, _, _, _ = context_for()
+
+    def handler(server, raw):
+        _respond(server, 503, {"error": "busy"})
+
+    with FakeGateway(handler) as server:
+        result = InterpretationService(_adapter_for(server, retry_delay_s=0)).interpret(
+            InterpretationRequest(context=package))
+    assert result.failure_reason is FailureReason.PROVIDER_ERROR
+    assert len(server.requests) == 2
+
+
+def test_non_retryable_authentication_failure_is_not_retried():
+    package, _, _, _ = context_for()
+
+    def handler(server, raw):
+        _respond(server, 401, {"error": "unauthorized"})
+
+    with FakeGateway(handler) as server:
+        result = InterpretationService(_adapter_for(server, retry_delay_s=0)).interpret(
+            InterpretationRequest(context=package))
+    assert result.failure_reason is FailureReason.AUTHENTICATION
+    assert len(server.requests) == 1
+
+
+def test_unreachable_provider_is_distinct_from_timeout():
+    package, _, _, _ = context_for()
+    adapter = NineRouterInterpretationAdapter(
+        ResolvedRoute("nine-test", "http://127.0.0.1:1/v1", "general", SECRET),
+        timeout_s=1, retry_delay_s=0,
+    )
+    result = InterpretationService(adapter).interpret(InterpretationRequest(context=package))
+    assert result.failure_reason is FailureReason.UNREACHABLE_PROVIDER
+
+
+def test_disabled_and_unknown_active_gateways_are_typed():
+    service = AiRuntimeService(store=InMemoryAiRuntimeStore())
+    with pytest.raises(HermesProviderError) as unknown:
+        NineRouterInterpretationAdapter.from_active_config(service)
+    assert unknown.value.reason is FailureReason.UNKNOWN_GATEWAY
+
+    configured = _service_with_active()
+    configured.store.save_gateway(GatewayConfig(
+        gateway_id="disabled", display_name="Disabled", gateway_type=GatewayType.NINE_ROUTER,
+        endpoint="http://127.0.0.1:1/v1", auth_mode=GatewayAuthMode.API_KEY,
+        secret_ref="env:TEST_ADAPTER_KEY", route="general", enabled=False, is_local=False,
+    ))
+    configured.store.set_active("disabled")
+    with pytest.raises(HermesProviderError) as disabled:
+        NineRouterInterpretationAdapter.from_active_config(configured)
+    assert disabled.value.reason is FailureReason.DISABLED_GATEWAY

@@ -40,7 +40,13 @@ class FailureReason(StrEnum):
     INSUFFICIENT_CONTEXT = "insufficient_context"
     MODEL_TIMEOUT = "model_timeout"
     PROVIDER_ERROR = "provider_error"
+    UNREACHABLE_PROVIDER = "unreachable_provider"
+    AUTHENTICATION = "authentication"
+    MALFORMED_RESPONSE = "malformed_response"
+    VALIDATION_FAILURE = "malformed_output"
     MALFORMED_OUTPUT = "malformed_output"
+    DISABLED_GATEWAY = "disabled_gateway"
+    UNKNOWN_GATEWAY = "unknown_gateway"
     INPUT_BUDGET_EXCEEDED = "input_budget_exceeded"
 
 
@@ -74,7 +80,11 @@ class TopicRelation(StrEnum):
 
 
 class HermesProviderError(RuntimeError):
-    """Raised by an adapter when the configured interpretation route fails."""
+    """Raised by an adapter with a safe, typed provider failure reason."""
+
+    def __init__(self, message: str, reason: FailureReason = FailureReason.PROVIDER_ERROR) -> None:
+        super().__init__(message)
+        self.reason = reason
 
 
 class InterpretationAdapter(Protocol):
@@ -261,9 +271,9 @@ class InterpretationService:
         except TimeoutError:
             return _failure_result(request, result_id, address_style, address_evidence,
                                    FailureReason.MODEL_TIMEOUT)
-        except HermesProviderError:
+        except HermesProviderError as exc:
             return _failure_result(request, result_id, address_style, address_evidence,
-                                   FailureReason.PROVIDER_ERROR)
+                                   exc.reason)
         except Exception:
             # Do not leak raw adapter exceptions or let integration failures
             # escape the C7 result contract.
@@ -276,7 +286,7 @@ class InterpretationService:
             parsed = _validate_output(adapter_response.output, request)
         except (TypeError, ValueError, KeyError):
             return _failure_result(request, result_id, address_style, address_evidence,
-                                   FailureReason.MALFORMED_OUTPUT)
+                                   FailureReason.VALIDATION_FAILURE)
         except Exception:
             # Adapter failures are intentionally not reflected with raw provider
             # messages, which might contain credentials or untrusted content.
@@ -496,6 +506,12 @@ def _validate_output(raw: Mapping[str, Any], request: InterpretationRequest) -> 
             _confidence(item.get("confidence")),
             _refs(item.get("message_ids"), message_ids, "message"),
         ))
+    seen_claim_values: dict[str, str] = {}
+    for claim in parsed_claims:
+        encoded_value = json.dumps(claim.value, ensure_ascii=False, sort_keys=True, allow_nan=False)
+        previous = seen_claim_values.setdefault(claim.field, encoded_value)
+        if previous != encoded_value:
+            raise ValueError("contradictory claims for the same field")
     result["extracted_claims"] = tuple(parsed_claims)
 
     missing = raw["missing_information"]

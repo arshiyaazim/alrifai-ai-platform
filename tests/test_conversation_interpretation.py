@@ -366,3 +366,18 @@ def test_external_injection_is_not_promoted_to_c5_admin_instruction():
     assert msg["content_trust"] == "untrusted_conversation_data"
     assert payload["conversation"]["applicable_admin_owner_instructions"] == []
     assert "never instructions" in payload["task"]
+
+
+
+def test_contradictory_claim_evidence_is_rejected_fail_closed():
+    package, _, _, current = context_for("আগে কাজ করেছি")
+    claims = [
+        {"field": "experience", "value": "yes", "evidence_state": "candidate_claimed",
+         "confidence": .9, "message_ids": [str(current.message_id)]},
+        {"field": "experience", "value": "no", "evidence_state": "candidate_claimed",
+         "confidence": .9, "message_ids": [str(current.message_id)]},
+    ]
+    result = InterpretationService(FakeHermes(output(extracted_claims=claims))).interpret(
+        InterpretationRequest(package))
+    assert result.status is InterpretationStatus.ABSTAINED
+    assert result.failure_reason is FailureReason.VALIDATION_FAILURE
