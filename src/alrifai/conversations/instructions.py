@@ -344,8 +344,14 @@ class PostgresInstructionStore:
 
 
 class InstructionService:
-    def __init__(self, store):
+    def __init__(self, store, *, clock=None):
         self.store = store
+        self._clock = clock or (lambda: datetime.now(timezone.utc))
+
+    def _now(self):
+        value = self._clock()
+        _aware(value, "clock")
+        return value
 
     def create_version(self, principal, draft: InstructionDraft):
         actor = _trusted_manager(principal)
@@ -361,7 +367,7 @@ class InstructionService:
         version = InstructionVersion(uuid4(), instruction_id, number, draft.subject_key.strip(),
             draft.content.strip(), actor.principal_type, actor.principal_id, draft.scope, draft.priority,
             draft.effective_from, draft.expires_at, draft.supersedes_version_id,
-            datetime.now(timezone.utc), draft.correlation_id, draft.idempotency_key, draft.provenance)
+            self._now(), draft.correlation_id, draft.idempotency_key, draft.provenance)
         event = self._event(actor, version.version_id, InstructionEventType.CREATED,
                             draft.idempotency_key + ":created", draft.correlation_id)
         return self.store.create(version, event)
@@ -410,7 +416,7 @@ class InstructionService:
     def status(self, version_id):
         if self.store.get(version_id) is None:
             raise InstructionError("instruction version not found")
-        return _status(self.store.events(version_id), datetime.now(timezone.utc))
+        return _status(self.store.events(version_id), self._now())
 
     def select(self, context: InstructionContext) -> InstructionSelection:
         eligible, evidence = [], []
@@ -464,10 +470,9 @@ class InstructionService:
             raise AuthorizationDenied("Admin cannot change Owner instruction lifecycle")
         return version
 
-    @staticmethod
-    def _event(actor, version_id, event_type, key, correlation, reason=None, occurred_at=None):
+    def _event(self, actor, version_id, event_type, key, correlation, reason=None, occurred_at=None):
         return InstructionEvent(version_id, event_type, actor.principal_id,
-            occurred_at or datetime.now(timezone.utc), key, correlation, reason)
+            occurred_at or self._now(), key, correlation, reason)
 
 
 def _same_instruction(left, right):

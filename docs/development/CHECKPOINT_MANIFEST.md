@@ -1,3 +1,12 @@
+## C5/C6 fixed-clock regression reconciliation — 2026-09-23
+
+- Starting SHA: `7d9c77c9bd2108ab95f666b53be2a28a55f8d9c1`; branch `feat/windows-local-dev`. The pushed C7 checkpoint and excluded untracked artifacts were preserved. No commit or push was performed for this fix.
+- Original failure matrix: all twelve failures were reproduced. C6 context failures: `test_context_includes_c5_effective_owner_instruction_and_keeps_external_text_untrusted` and `test_c5_selection_evidence_is_preserved_with_context` expected an active Owner instruction/APPLICABLE evidence but observed empty selection. C5 failures: Owner precedence, unrelated subjects, expired/revoked/future Owner with effective Admin, supersession, same-authority conflict, topic scope, channel/account/conversation scope, and idempotent injection guidance all observed empty selection or missing conflict.
+- Clock evidence: C5 tests select at fixed `2026-09-22 12:00:00+00:00`; C6 tests select/retrieve at fixed `2026-09-22 10:00:00+00:00`. `InstructionService` lifecycle events were stamped with real current UTC (`2026-09-23`), so `_status(events, context.at)` correctly excluded CREATE/ACTIVATE/REVOKE events as occurring after the historical selection time. Timezone conversion was not involved; all values were aware UTC datetimes.
+- Minimal fix: `InstructionService` now accepts an optional clock dependency while retaining real UTC as the production default. Version creation, lifecycle events, and status checks use that clock. Only the fixed-clock C5/C6 test fixtures inject their respective `NOW`; lifecycle, authorization, audit/event ordering, scope, precedence, revocation, and supersession semantics remain unchanged.
+- Verification: original twelve failures `12 passed`; C5/C6 focused suites `37 passed`; C7/runtime focused suites `73 passed`; relevant non-integration C1–C7 regression `180 passed`; compile, diff, and structural secret checks passed. No new regressions.
+- C7 remains `PARTIAL` due provider variability; C8/C9 remain not started. No deployment, service restart, existing-database migration, recruitment policy change, protected mutation, or outbound message occurred.
+
 ## C7 live reliability regression diagnosis — 2026-09-23
 
 - Starting SHA: `6212ccd8d105e03a2efc15b924e0747d210c50a6`; worktree preserved; no reset, clean, stash, commit, push, restart, Docker/provider change, migration, or production action.

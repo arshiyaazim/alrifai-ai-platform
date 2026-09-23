@@ -36,7 +36,7 @@ def principal(kind=PrincipalType.ADMIN, capabilities=(Capability.MANAGE_CONVERSA
 
 
 def setup_service():
-    return InstructionService(InMemoryInstructionStore())
+    return InstructionService(InMemoryInstructionStore(), clock=lambda: NOW)
 
 
 def add(service, actor, subject, content, *, scope=None, effective=NOW-timedelta(days=1), expires=None, key=None, supersedes=None):
