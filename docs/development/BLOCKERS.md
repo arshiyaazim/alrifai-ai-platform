@@ -1,5 +1,11 @@
 # Current Blockers and Required Decisions
 
+## Reconciled current status — 2026-09-23
+
+- Checkpoint commit: `285ef82fe0c6b6c37735c05e763f2c6ba1331c5a`.
+- C7 is PARTIAL, not COMPLETE. The authenticated 9Router live route passed; five Section 24 cases are explicitly `SAFE_ABSTAIN`; twelve unchanged C5/C6 baseline failures remain.
+- No production deployment, existing database migration, service restart, C8, or C9 work occurred. Historical route-gate blockers below are superseded by the authenticated live-route result.
+
 ## Live qualification correction — 2026-09-22 (VPS)
 
 - RESOLVED: 9Router is available from the host-capable execution boundary. The managed shell’s earlier `connection refused` result was namespace-specific and is not a service-health result.
@@ -27,7 +33,7 @@
 
 ## Latest C7 qualification gate — 2026-09-22
 
-- Live route is not yet audited beyond local repository/configuration sources; no in-application approved model adapter or route contract was found. After the offline baseline remote backup verifies, inspect remaining approved local routing evidence and, only if needed, use existing authorized read-only VPS access. If no existing approved route/authentication is safely usable, mark live inference BLOCKED/UNVERIFIED and stop; do not invent a provider, model, credential, or configuration.
+- Offline C7 baseline is remotely verified at `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb`. Current read-only probes confirm 9Router and OmniRoute reject missing and invalid bearer credentials (HTTP 401). The existing SSH forward to 9Router was established temporarily, verified from Windows, and stopped. No dedicated C7 API credential is available in the local runtime; no authenticated route/model probe can be made. C7 remains PARTIAL. Required prerequisite: an authorized operator issues a dedicated C7 credential without rotating existing keys and provisions it through an approved local secret mechanism, plus confirms the authorized route/model identifier. Do not extract legacy secrets, invent credentials, or weaken gateway authentication.
 - Recruitment Knowledge Hub and exact office address remain unresolved; neither blocks generic C7 interpretation, and no facts may be invented.
 - C8/C9 are not started. No production, VPS, database, authentication, channel, Hermes, or gateway configuration changes are allowed.
 

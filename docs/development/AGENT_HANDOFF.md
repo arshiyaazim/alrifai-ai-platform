@@ -1,5 +1,9 @@
 # Agent Handoff
 
+## Reconciled current checkpoint — 2026-09-23
+
+Repository checkpoint: `285ef82fe0c6b6c37735c05e763f2c6ba1331c5a`; C7 is PARTIAL, not COMPLETE. The authenticated 9Router live route passed, five Section 24 cases safely abstained, and twelve unchanged C5/C6 baseline failures remain. No production deployment, existing database migration, service restart, C8, or C9 work occurred.
+
 ## Current live qualification checkpoint — 2026-09-22 (VPS, no commit/push)
 
 Host-capable execution verified the existing `9router` container (`Up 3 days`), loopback mapping, listeners, and HTTP 200 health. The earlier no-listener observation was from the managed shell’s isolated network namespace. The canonical `.env` loader authenticated `nine-general/general` successfully; the credential remained server-side and was never printed.
@@ -38,12 +42,12 @@ Live qualification is no longer blocked: the host-capable execution boundary ver
 
 ## Latest handoff — C7 offline checkpoint / live adapter gate (2026-09-22)
 
-1. Repo `D:/apps/alrifai-ai-platform`, branch `feat/windows-local-dev`; starting HEAD `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`, matching the verified C6 remote baseline at session start. Offline C7 checkpoint is authorized; record its exact commit/remote SHA only after independent verification.
+1. Repo `D:/apps/alrifai-ai-platform`, branch `feat/windows-local-dev`; offline C7 commit and remote HEAD are both `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb`; expected C7 paths independently verified in the remote tree. C1–C6 baseline remains backed at `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c` (ancestor).
 2. C7 canonical implementation remains `src/alrifai/conversations/interpretation.py`, export in `src/alrifai/conversations/__init__.py`, tests in `tests/test_conversation_interpretation.py`. Decision on prior unapproved artifacts: MODIFY, not replace. Offline qualification: 35 focused passed; selected C1–C6/identity/auth 107 passed/5 DB-gated skipped; full no-DB 142 passed/20 DB-gated skipped; compile passed. These are offline/test-double results.
 3. Four unrelated changes must remain untouched and excluded from C7 commits: `docker-compose.yml`, `scripts/start-alrifai-web.ps1`, `src/alrifai/web/app.py`, `tests/integration/test_web_auth_postgres.py`.
-4. After offline remote backup is independently verified, audit existing routing/provider architecture. Use an approved existing route only; VPS, if needed, is read-only. No keys/config changes, production mutations, live Hermes/gateway changes, or outbound messages. If no authorized route is available, stop with C7 PARTIAL.
+4. Live-route gate: local C7 has no concrete HTTP adapter. VPS read-only inventory found 9Router image 0.5.75 on loopback 20129 and OmniRoute on loopback 20128; both returned HTTP 401 for missing and invalid bearer credentials. Existing SSH forward `iamazim` → `127.0.0.1:20130` reached 9Router and was stopped after probing. No valid/dedicated C7 credential or authenticated model selection is available locally. Do not extract legacy secrets, reuse unrelated credentials, weaken auth, or modify gateway/provider configuration. Authenticated probe and live inference were NOT RUN; route gate is BLOCKED.
 5. C7 is interpretation/extraction only: no reply generation, domain mutation/dispatch, Recruitment Knowledge Hub, C8, or C9. Employee ID remains the designated normalized Bangladesh mobile. Address and knowledge facts remain unresolved; do not invent.
-6. C7 has no persistence/migration. No database qualification required; no DB was used. No C7 final commit/push unless controlled live inference and all qualification gates pass.
+6. C7 has no persistence/migration; no DB qualification required and no DB was used. Latest C7 status is PARTIAL. Current route-audit/spec/continuity documentation is local-only/uncommitted; offline baseline remains remotely backed at `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb`. Resume C7 only after an authorized operator issues a dedicated C7 API credential and provisions it through an approved local secret mechanism, and the authorized route/model identifier is confirmed. Then implement the minimum provider-neutral adapter and run controlled synthetic inference qualification. No final qualified C7 commit/push before all gates pass; do not start C8/C9.
 
 ## Current handoff — C7 local-only checkpoint (2026-09-22, 14:59 +06:00)
 

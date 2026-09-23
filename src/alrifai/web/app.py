@@ -183,6 +183,11 @@ def home(message: str = "", return_to: str = "") -> HTMLResponse:
     """, message)
 
 
+@app.get("/login", response_class=HTMLResponse)
+def login_form(return_to: str = "") -> HTMLResponse:
+    return home(return_to=return_to)
+
+
 @app.post("/login")
 def login(request: Request, username: str = Form(...), password: str = Form(...), return_to: str = Form("")) -> HTMLResponse:
     target = _safe_return_url(return_to)

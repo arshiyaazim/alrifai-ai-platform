@@ -1,5 +1,9 @@
 # Active Development Task
 
+## Reconciled current checkpoint — 2026-09-23
+
+Current repository checkpoint: `285ef82fe0c6b6c37735c05e763f2c6ba1331c5a`. C7 remains PARTIAL, not COMPLETE: authenticated 9Router live route PASS; five Section 24 cases are `SAFE_ABSTAIN`; twelve unchanged C5/C6 baseline failures remain. No production deployment, existing database migration, service restart, C8, or C9 work occurred.
+
 ## Live C7 qualification completed — owner checkpoint pending (2026-09-22)
 
 Status: PARTIAL pending owner review, not blocked on 9Router. Host-capable execution confirmed the existing `9router` container and HTTP 200 health. The canonical server-side `.env` loader authenticated `nine-general/general` successfully without exposing the credential. Section 24 completed with PASS/SAFE_ABSTAIN outcomes recorded in `CURRENT_STATE.md`; Section 25 live auth-failure and offline failure-matrix checks are recorded there.
@@ -26,7 +30,7 @@ Status: implementation + offline/failure qualification complete; live authentica
 
 ## Current authorized sequence — offline C7 checkpoint, then live-route qualification (2026-09-22)
 
-Phase A is in progress: selectively checkpoint the reviewed offline C7 baseline and independently verify the authorized `feat/windows-local-dev` remote. Phase B audits existing provider/routing architecture; Phase C may add only the minimum provider-neutral C7 adapter wiring; Phase D performs controlled synthetic live inference only through an approved existing route. If the route is unavailable, stop with C7 PARTIAL. Do not start C8/C9, build the Recruitment Knowledge Hub, send outbound messages, or change production/VPS. No C7 final checkpoint is permitted unless live qualification succeeds.
+Phase A PASS: offline C7 baseline commit `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb` equals independently verified `origin/feat/windows-local-dev` and expected files are present. Phase B identified private loopback gateways: 9Router at VPS `127.0.0.1:20129`, OmniRoute at VPS `127.0.0.1:20128`; both require valid bearer authorization (missing and invalid probes returned HTTP 401). The existing SSH forward to Windows `127.0.0.1:20130` was verified, then stopped. Phase B remains BLOCKED because no dedicated authorized C7 credential and model/route selection are available locally. No adapter code or live model call was started. Next action requires a dedicated C7 credential made available through an approved local secret mechanism and confirmation of an authorized route/model identifier; then resume C7 only. C8/C9 remain not started.
 
 ## Current checkpoint — C7 bounded interpretation (2026-09-22, 14:59 +06:00)
 

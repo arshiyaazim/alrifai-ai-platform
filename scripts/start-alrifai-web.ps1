@@ -4,8 +4,9 @@ param(
     [string]$OpenWebUIUrl = "",
     [string]$AlrifaiEnvironment = "",
     [string]$CookieDomain = "",
-    [switch]$UseVerifiedIdentityVerifyContainer,
-    [switch]$SkipOpenWebUI
+    [switch]$UseVerifiedIdentityVerifyContainer = $true,
+    [switch]$SkipOpenWebUI,
+    [switch]$VerifyConfiguration
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,9 +14,9 @@ $python = Join-Path $PSScriptRoot "..\.venv\Scripts\python.exe"
 if (-not (Test-Path -LiteralPath $python)) { throw "Project virtual environment not found: $python" }
 
 $localConfig = Join-Path $PSScriptRoot "..\.env.local"
-# Verified-container mode must derive credentials from the live test container,
-# not from a possibly stale local database URL.
-if (-not $UseVerifiedIdentityVerifyContainer -and -not $env:ALRIFAI_DATABASE_URL -and (Test-Path -LiteralPath $localConfig)) {
+# Keep the existing local configuration path; verified mode rejects endpoint drift
+# and derives credentials from the preserved development container.
+if (-not $env:ALRIFAI_DATABASE_URL -and (Test-Path -LiteralPath $localConfig)) {
     foreach ($line in Get-Content -LiteralPath $localConfig) {
         if ($line -match '^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
             Set-Item -Path ("Env:" + $matches[1]) -Value $matches[2]
@@ -23,7 +24,18 @@ if (-not $UseVerifiedIdentityVerifyContainer -and -not $env:ALRIFAI_DATABASE_URL
     }
 }
 
-if (-not $env:ALRIFAI_DATABASE_URL -and $UseVerifiedIdentityVerifyContainer) {
+if ($UseVerifiedIdentityVerifyContainer) {
+    if ($env:ALRIFAI_DATABASE_URL) {
+        try { $configuredDatabase = [uri]$env:ALRIFAI_DATABASE_URL }
+        catch { throw "Invalid database URL; connection details suppressed." }
+        if ($configuredDatabase.Scheme -notin @("postgresql", "postgres") -or
+            $configuredDatabase.Host -ne "127.0.0.1" -or $configuredDatabase.Port -ne 57395 -or
+            $configuredDatabase.AbsolutePath -ne "/identity_verify" -or
+            $configuredDatabase.UserInfo.Split(':')[0] -ne "verify_user" -or
+            $configuredDatabase.Query -or $configuredDatabase.Fragment) {
+            throw "Database selection conflicts with the frozen development baseline (127.0.0.1:57395/identity_verify). No database was switched."
+        }
+    }
     $container = "alrifai-identity-verify-02c"
     $containerInfo = docker ps --filter "name=^/$container$" --format "{{.Names}}|{{.Status}}|{{.Ports}}"
     if ($LASTEXITCODE -ne 0 -or -not $containerInfo -or $containerInfo -notmatch '^alrifai-identity-verify-02c\|Up .*127\.0\.0\.1:57395->5432/tcp$') {
@@ -32,7 +44,7 @@ if (-not $env:ALRIFAI_DATABASE_URL -and $UseVerifiedIdentityVerifyContainer) {
     $databaseUser = (docker exec $container sh -c 'printf %s "$POSTGRES_USER"').Trim()
     $databaseName = (docker exec $container sh -c 'printf %s "$POSTGRES_DB"').Trim()
     $databasePassword = (docker exec $container sh -c 'printf %s "$POSTGRES_PASSWORD"').Trim()
-    if (-not $databaseUser -or -not $databaseName -or -not $databasePassword) {
+    if ($databaseUser -ne "verify_user" -or $databaseName -ne "identity_verify" -or -not $databasePassword) {
         throw "The verified container did not expose its local initialization connection configuration."
     }
     # Keep the password out of the URI and pass it only through the child
@@ -53,8 +65,14 @@ $databaseProbe = @(& $python -c "import os, psycopg; connection=psycopg.connect(
 $probeExitCode = $LASTEXITCODE
 $ErrorActionPreference = $probeErrorAction
 if ($probeExitCode -ne 0) {
-    throw ("Database connection probe failed: " + ($databaseProbe -join ' '))
+    throw "Database connection probe failed; connection details suppressed. Check the selected database and runtime credential."
 }
+if ($UseVerifiedIdentityVerifyContainer) {
+    Write-Host "Development database verified: 127.0.0.1:57395/identity_verify (alrifai-identity-verify-02c)."
+} else {
+    Write-Host "Explicit custom database mode: connection verified; frozen development selection is not in use."
+}
+if ($VerifyConfiguration) { return }
 
 if (-not $SkipOpenWebUI) {
     $composeRoot = Join-Path $PSScriptRoot ".."

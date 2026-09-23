@@ -1,5 +1,11 @@
 # AL-RIFAI Development Checkpoint Manifest
 
+## Reconciled current checkpoint — 2026-09-23
+
+- Repository checkpoint: `285ef82fe0c6b6c37735c05e763f2c6ba1331c5a`.
+- C7 status: PARTIAL, not COMPLETE. Authenticated 9Router live route PASS; five Section 24 cases are `SAFE_ABSTAIN`; twelve unchanged C5/C6 baseline failures remain.
+- No production deployment, existing database migration, service restart, C8, or C9 work occurred. Older route-gate entries below are historical.
+
 ## Live qualification update — 2026-09-22 (VPS, uncommitted)
 
 - C7 status: PARTIAL, not COMPLETE. Live auth/route PASS; five Section 24 semantic cases are explicitly `SAFE_ABSTAIN`; twelve unchanged C5/C6 baseline failures remain.
@@ -25,11 +31,12 @@
 
 ## Current authorized C7 offline baseline checkpoint — 2026-09-22, Asia/Dhaka (+06:00)
 
-- Root: `D:/apps/alrifai-ai-platform`; branch: `feat/windows-local-dev`; starting HEAD: `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`, equal to `origin/feat/windows-local-dev` at preflight. GitHub CLI owner session performed an HTTPS read-only `ls-remote` through a one-command URL rewrite; SSH auth itself returned `Permission denied (publickey)`. Repository identity was verified as `arshiyaazim/alrifai-ai-platform`. Offline C7 commit/push and independent remote verification are pending.
+- Root: `D:/apps/alrifai-ai-platform`; branch: `feat/windows-local-dev`; offline C7 commit and independently fetched remote HEAD: `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb`; exact match, expected 12 paths present in remote tree. C1–C6 baseline ancestor: `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`. Remote repository: `arshiyaazim/alrifai-ai-platform`. No force push, merge, or PR.
 - Exact intended offline C7 paths: `MCP-Servers/conversations-ai/FINAL_IMPLEMENTATION_SPEC.md`; `MCP-Servers/conversations-ai/WORKFLOWS.md`; `docs/architecture/ARCHITECTURE_DECISIONS.md`; the six continuity files; `src/alrifai/conversations/__init__.py`; `src/alrifai/conversations/interpretation.py`; `tests/test_conversation_interpretation.py`. No other files are in intended C7 scope.
 - Four excluded preserved paths: `docker-compose.yml`; `scripts/start-alrifai-web.ps1`; `src/alrifai/web/app.py`; `tests/integration/test_web_auth_postgres.py`. No deleted files; no C7 migration/persistence; no credentials saved.
-- Actual fresh checks: C7 35 passed; selected C1–C6/identity/auth 107 passed and 5 DB-gated skipped; full no-DB 142 passed/20 DB-gated skipped; C7 package compilation passed. PostgreSQL not used; C7 has no persistence. Live inference not run/unverified.
-- Provider source audit found no app model/provider adapter or runtime route abstraction locally. Existing 9Router tunnel/provider scripts are not proof of an approved application route. Phase B is gated on offline remote verification. C8/C9 not started; production/VPS/database/auth/channel/Hermes runtime unchanged.
+- Offline baseline qualification: C7 focused 35 passed; selected C1–C6/identity/auth 107 passed and 5 DB-gated skipped; full no-DB 142 passed/20 DB-gated skipped; package compile, diff check and secret scan passed. Fresh for this route-gate turn: C7 focused rerun 35 passed and conversation package compile passed. PostgreSQL not used; C7 has no persistence. Live tests: 0; live inference NOT RUN.
+- Provider audit found no concrete app model adapter locally. Read-only VPS inspection found 9Router image 0.5.75 on loopback 20129 and OmniRoute on loopback 20128. Both returned HTTP 401 for missing and invalid bearer credentials. A temporary SSH forward to Windows loopback 20130 reached 9Router and was stopped after the probe. No dedicated C7 credential or authenticated model/route selection is available locally; authenticated probe, adapter wiring, live request and C7 live tests were NOT RUN. No VPS service/config/provider, DB, auth, channel or Hermes runtime change occurred. No C7 final commit/push.
+- Current HEAD and upstream: both `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb`; working tree has 9 local-only route/spec/continuity modifications (`FINAL_IMPLEMENTATION_SPEC.md`, `WORKFLOWS.md`, `ARCHITECTURE_DECISIONS.md`, and all six continuity files), plus the four excluded preserved pre-existing modifications. Staged: NONE. Untracked: NONE. Deleted: NONE. The C7 source, export, and tests are clean at the verified offline checkpoint. No later C7 commit/push was performed because live qualification remains blocked.
 
 ## Current local C7 checkpoint — 2026-09-22, 14:59:18 +06:00
 

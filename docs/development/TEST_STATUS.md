@@ -1,5 +1,9 @@
 # Test Status
 
+## Reconciled current checkpoint — 2026-09-23
+
+Checkpoint commit: `285ef82fe0c6b6c37735c05e763f2c6ba1331c5a`. C7 is PARTIAL, not COMPLETE: authenticated 9Router route PASS; five Section 24 cases are `SAFE_ABSTAIN`; twelve unchanged C5/C6 baseline failures remain. No production deployment, existing database migration, service restart, C8, or C9 work occurred.
+
 ## Live C7 qualification — 2026-09-22 (VPS, uncommitted)
 
 | Scope | Actual result | Notes |
@@ -60,6 +64,21 @@
 
 ## Fresh offline C7 qualification for authorized baseline checkpoint — 2026-09-22
 
+Offline C7 checkpoint `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb` is independently verified on `origin/feat/windows-local-dev`. Later route-audit documentation is local-only; it records no approved usable route, so no live inference test ran.
+
+## Fresh live-route gate verification — 2026-09-22
+
+| Scope | Actual result | Notes |
+|---|---:|---|
+| VPS gateway inventory | PASSED | Read-only: 9Router image `0.5.75` loopback `20129`; OmniRoute loopback `20128`; no service/provider configuration changed. |
+| Gateway auth enforcement | PASSED | Both gateways returned HTTP 401 for missing and deliberately invalid bearer values. This does not verify valid authentication. |
+| Windows SSH transport | PASSED | Existing SSH forward `127.0.0.1:20130` reached 9Router and returned HTTP 401; temporary tunnel stopped and listener closure verified. |
+| Local C7 credential / model route | BLOCKED | No relevant credential variable in process environment or `.env.local` key names; no valid dedicated C7 key/model identifier was available. Secret values were not read or exposed. |
+| Authenticated model probe / live inference | NOT RUN | No authorized C7 credential; live request count 0. |
+| Adapter wiring and C7 live tests | NOT RUN | Connectivity/auth prerequisite not passed; offline C7 source/tests unchanged. |
+| Offline C7 focused rerun | PASSED — 35 | `.venv/Scripts/python.exe -m pytest -q tests/test_conversation_interpretation.py` with `PYTHONPATH=src`; test doubles only. |
+| Conversation package compile | PASSED | `.venv/Scripts/python.exe -m compileall -q src/alrifai/conversations`. |
+
 | Scope | Actual result | Notes |
 |---|---:|---|
 | C7 focused | PASSED — 35 | `PYTHONPATH=src .venv/Scripts/python.exe -m pytest -q tests/test_conversation_interpretation.py`; injected test adapter only, not live inference. |
@@ -68,6 +87,7 @@
 | Compile/import | PASSED | `.venv/Scripts/python.exe -m compileall -q src/alrifai/conversations`. |
 | PostgreSQL | NOT REQUIRED for C7 | No C7 persistence/migration; no database was used or changed. Historical C1–C6 PostgreSQL results were not rerun here. |
 | Live model inference | NOT RUN / UNVERIFIED | No approved route is established yet. |
+| Provider route audit | BLOCKED | Local repo has no app model adapter; local tunnel/API was unavailable. Read-only VPS inventory showed legacy Hermes and 9Router/OmniRoute candidates, but no approved C7 auth/integration contract. No live request attempted. |
 | `git diff --check` / secret scan | PASSED | Run against intended offline C7 file scope before checkpoint; secret scan must include untracked C7 files and staged content. |
 
 ## C7 local implementation qualification — 2026-09-22, 14:59 +06:00

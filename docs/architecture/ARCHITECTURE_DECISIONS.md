@@ -34,13 +34,13 @@ Implemented in `src/alrifai/conversations/instructions.py`, persisted in V009. C
 
 ### ADR-011 — Natural conversation, knowledge authority, and relationship-aware address
 
-**Status:** Accepted by explicit Owner policy; C1–C6 remotely backed up at cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c; C7 structured interpretation is implemented locally and uncommitted behind a provider-neutral adapter; live inference is not verified.
+**Status:** Accepted by explicit Owner policy; C1–C6 remotely backed up at cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c; C7 offline structured interpretation is remotely backed up at 9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb; C7 remains PARTIAL after the authenticated 9Router route passed controlled live qualification with five SAFE_ABSTAIN outcomes. Twelve unchanged C5/C6 baseline failures remain.
 
 Business facts and mandatory rules retain canonical authority; operational and style guidance are adaptable; conversation examples are illustrative, not prescriptive; historical/superseded material is not current. Flexible wording and goal-oriented conversation do not permit changes to verified amounts, hours, dates, addresses, eligibility or protected decisions. C7 interprets/extracts evidence; C8/domain services provide authorized business reads and mutations; C9 generates/delivers the final response. No stage may turn a candidate claim or example into verified policy or a protected decision.
 
 Use respectful “আপনি” for unknown people, Applicants and selected-but-not-joined candidates. “তুমি” is permitted only for a C2-resolved Person with C6 evidence of a matching canonical active Employee record and explicit relationship evidence. Otherwise default to “আপনি”. The relationship signal is for tone, not authorization and not Employee-ID mutation. A canonical approved recruitment knowledge source and exact office-address display remain prerequisites for communicating those values as facts.
 
-C7 reuses the C6 bounded context and C4/C5 evidence, validates model output against canonical references, and treats candidate claims as non-authoritative. The local adapter is injectable/provider-neutral; no provider/model was selected and no live inference or routing change was performed. C7 has no persistence. The approved Recruitment knowledge source and exact office display remain unresolved; no facts may be invented. C8/C9 remain not started.
+C7 reuses the C6 bounded context and C4/C5 evidence, validates model output against canonical references, and treats candidate claims as non-authoritative. The adapter seam is injectable/provider-neutral. The authenticated VPS 9Router route passed controlled live qualification; five Section 24 cases safely abstained on malformed or slow provider output, and no gateway/provider configuration was changed. C7 has no persistence or migration. The approved Recruitment knowledge source and exact office display remain unresolved; no facts may be invented. C8/C9 remain not started.
 
 ## Open decisions
 

@@ -1,6 +1,6 @@
 # Conversations and AI Workflows
 
-The complete design is [`FINAL_IMPLEMENTATION_SPEC.md`](FINAL_IMPLEMENTATION_SPEC.md). C1–C6 are accepted foundations. C7 structured interpretation is implemented locally with an offline-tested provider-neutral adapter seam; no live model inference or route activation is verified. C8 dispatch, C9 reply/outbound, and channel activation remain not started.
+The complete design is [`FINAL_IMPLEMENTATION_SPEC.md`](FINAL_IMPLEMENTATION_SPEC.md). C1–C6 are accepted foundations. C7 is PARTIAL, not COMPLETE: its offline baseline is backed up at `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb`, the authenticated 9Router live route passed, and five Section 24 cases safely abstained. Twelve unchanged C5/C6 baseline failures remain; no production deployment, existing database migration, service restart, C8, or C9 work occurred. C8 dispatch, C9 reply/outbound, and channel activation remain not started.
 
 Inbound Bridge/Meta/Messenger/social/admin relay → preserve source phone/platform identity and timestamps → normalize source and IDs → persist raw evidence → deduplicate → resolve Person → retrieve ordered/relevant context → maintain topic state → semantic classify/extract → apply latest applicable Admin instruction → route to a domain service → receive policy/result → queue reply → track delivery.
 

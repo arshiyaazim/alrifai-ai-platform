@@ -29,6 +29,14 @@ def database_url() -> str:
 @pytest.fixture
 def isolated_auth_data(database_url: str):
     with psycopg.connect(database_url) as connection:
+        owner = connection.execute(
+            "SELECT 1 FROM auth_principals WHERE principal_type='OWNER' LIMIT 1"
+        ).fetchone()
+        if owner is not None:
+            raise RuntimeError(
+                "Refusing destructive auth fixture against a database containing an Owner; "
+                "configure an explicitly isolated PostgreSQL test target."
+            )
         with connection.transaction():
             with connection.cursor() as cursor:
                 cursor.execute("DELETE FROM auth_sessions")
@@ -39,6 +47,13 @@ def isolated_auth_data(database_url: str):
                 cursor.execute("DELETE FROM auth_principals")
     yield
     with psycopg.connect(database_url) as connection:
+        owner = connection.execute(
+            "SELECT 1 FROM auth_principals WHERE principal_type='OWNER' LIMIT 1"
+        ).fetchone()
+        if owner is not None:
+            raise RuntimeError(
+                "Refusing destructive auth fixture cleanup against a database containing an Owner."
+            )
         with connection.transaction():
             with connection.cursor() as cursor:
                 cursor.execute("DELETE FROM auth_sessions")
@@ -105,6 +120,19 @@ def test_auth_check_and_safe_openwebui_return_flow(database_url: str, isolated_a
         client.cookies.set("alrifai_session", "invalid")
         assert client.get("/internal/auth-check").status_code == 401
         client.cookies.clear()
+
+        relative_login = client.get("/login?return_to=%2Fhome")
+        assert relative_login.status_code == 200
+        assert "name='return_to' value='/home'" in relative_login.text
+
+        openwebui_login = client.get("/login?return_to=https://ai.alrifai.iamazim.com/")
+        assert openwebui_login.status_code == 200
+        assert "name='return_to' value='https://ai.alrifai.iamazim.com/'" in openwebui_login.text
+
+        unsafe_login = client.get("/login?return_to=https://evil.example/")
+        assert unsafe_login.status_code == 200
+        assert "Invalid return destination" in unsafe_login.text
+        assert "name='return_to'" not in unsafe_login.text
 
         malicious = client.post(
             "/login",

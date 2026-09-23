@@ -1,5 +1,9 @@
 # AL-RIFAI Current State
 
+## Reconciled current state — 2026-09-23
+
+Repository checkpoint: `285ef82fe0c6b6c37735c05e763f2c6ba1331c5a`. C7 is PARTIAL, not COMPLETE: authenticated 9Router live route PASS; five Section 24 cases are `SAFE_ABSTAIN`; twelve unchanged C5/C6 baseline failures remain. No production deployment, existing database migration, service restart, C8, or C9 work occurred. Older blocked-route entries below are historical.
+
 ## Live C7 qualification checkpoint — 2026-09-22 (VPS, uncommitted)
 
 C7 STATUS: PARTIAL — live auth/route PASS, with five semantic SAFE_ABSTAIN outcomes and twelve unchanged C5/C6 baseline failures. This is not a COMPLETE qualification claim.
@@ -36,7 +40,7 @@ Live authenticated inference is BLOCKED on the dedicated 9Router credential (see
 
 ## Latest verified checkpoint — C7 offline baseline qualification (2026-09-22, Asia/Dhaka)
 
-Repository `D:/apps/alrifai-ai-platform`; branch `feat/windows-local-dev`; starting HEAD and origin branch are `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`. C1–C6 baseline is remotely verified there. C7 existing canonical module/tests were reviewed and kept with bounded safety fixes; offline tests pass, but no provider route/live inference has been verified. Offline C7 files are being selectively checkpointed; remote checkpoint SHA is pending independent post-push verification. The four unrelated modifications remain unchanged and excluded. No C7 persistence, VPS/production, auth, channel, Hermes runtime, reply generation, domain mutation, C8, or C9 changes.
+Repository `D:/apps/alrifai-ai-platform`; branch `feat/windows-local-dev`; C1–C6 remote baseline is `cf71c3b6b3f439003cd1ead0d2f5ce53583cab8c`. C7 offline checkpoint `9b5ffccdfc010c8dd37a13ab75be3c6cadb9c5bb` is independently verified at `origin/feat/windows-local-dev`. Current HEAD is that SHA; the nine C7 route/spec/continuity documents are local-only changes. Read-only VPS checks confirmed 9Router (image 0.5.75, loopback port 20129) and OmniRoute (loopback port 20128); both reject missing and invalid bearer credentials with HTTP 401. The existing SSH forward to local `127.0.0.1:20130` reached 9Router (HTTP 401); the temporary tunnel was then stopped and the port verified closed. No dedicated C7 credential or authenticated model/route selection is available locally. Adapter wiring and live inference were not started; C7 remains PARTIAL. Four unrelated modifications remain unchanged and excluded. No VPS service/config, provider, database, auth, channel, Hermes runtime, reply generation, domain mutation, C8, or C9 changes.
 
 Fresh qualification: C7 focused 35 passed; selected C1–C6/identity/auth regression 107 passed, 5 DB-gated skipped; full no-DB suite 142 passed, 20 DB-gated skipped; conversation package compile passed. The five selected DB skips and twenty full-suite DB skips are not passes. C7 has no persistence, so PostgreSQL qualification is not required. The remaining C7 gate is identifying and safely invoking an approved live model route; no route or credentials may be invented.
 
